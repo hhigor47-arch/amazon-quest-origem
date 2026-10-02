@@ -1,30 +1,48 @@
+/* ========================================
+   RESET
+======================================== */
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+
+/* ========================================
+   PÁGINA
+======================================== */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
 body {
     overflow: hidden;
     background: #111;
+    font-family: Arial, Helvetica, sans-serif;
 }
 
-/* ==========================================
+
+/* ========================================
    ÁREA DO JOGO
-   ========================================== */
+======================================== */
 
 .game-board {
     width: 100%;
     height: 500px;
     margin: 0 auto;
+
     position: relative;
     overflow: hidden;
 
     background:
         linear-gradient(
             #63c4eb 0%,
-            #a9e3f5 65%,
-            #d8f3dc 65%,
+            #a9e3f5 60%,
+            #d8f3dc 60%,
             #d8f3dc 100%
         );
 
@@ -32,9 +50,9 @@ body {
 }
 
 
-/* ==========================================
-   PROTAGONISTA
-   ========================================== */
+/* ========================================
+   PERSONAGEM
+======================================== */
 
 .player {
     width: 128px;
@@ -47,64 +65,76 @@ body {
 
     background-image: url("assets/amazon_quest_protagonist_spritesheet.png");
     background-repeat: no-repeat;
-
-    /*
-        A sprite sheet possui:
-
-        4 colunas
-        3 linhas
-
-        Cada frame = 128 x 128
-
-        Começamos no frame 1.
-    */
-
     background-position: 0 0;
-
     background-size: 512px 384px;
 
     z-index: 10;
+
+    /*
+        Mantém a área visual do personagem
+        estável enquanto o JS controla a física.
+    */
+    transform-origin: bottom center;
+
+    /*
+        Evita que o navegador tente selecionar
+        ou arrastar o personagem.
+    */
+    user-select: none;
+    pointer-events: none;
 }
 
 
-/* ==========================================
+/* ========================================
+   AGACHAMENTO
+======================================== */
+
+/*
+    Quando o S / ↓ estiver pressionado,
+    o JavaScript adiciona .crouching.
+
+    O personagem fica visualmente menor
+    e permanece apoiado no chão.
+*/
+
+.player.crouching {
+    height: 82px;
+
+    /*
+        Mantém os pés próximos ao chão.
+    */
+    bottom: 0;
+
+    /*
+        Reduz a largura visual proporcionalmente.
+    */
+    width: 128px;
+
+    /*
+        Mantém a sprite posicionada na parte inferior.
+    */
+    background-position: 0 0;
+}
+
+
+/* ========================================
    PULO
-   ========================================== */
+======================================== */
 
-.jump {
-    animation: player-jump 500ms ease-out;
-}
+/*
+    O pulo agora é controlado pelo JavaScript
+    através de velocidade vertical + gravidade.
 
-@keyframes player-jump {
-
-    0% {
-        bottom: 0;
-    }
-
-    40% {
-        bottom: 150px;
-    }
-
-    50% {
-        bottom: 150px;
-    }
-
-    60% {
-        bottom: 150px;
-    }
-
-    100% {
-        bottom: 0;
-    }
-}
+    Portanto NÃO colocamos uma animação CSS
+    de pulo aqui.
+*/
 
 
-/* ==========================================
-   OBSTÁCULO
-   ========================================== */
+/* ========================================
+   PRIMEIRO OBSTÁCULO
+======================================== */
 
 .obstacle {
-
     position: absolute;
 
     bottom: 0;
@@ -113,19 +143,31 @@ body {
     width: 60px;
     height: 80px;
 
-    background: #704214;
+    /*
+        Aparência provisória.
+        Depois substituiremos por obstáculos
+        próprios do universo Amazon Quest.
+    */
+    background:
+        linear-gradient(
+            90deg,
+            #5a3515,
+            #80501f,
+            #5a3515
+        );
 
     border-radius: 8px 8px 0 0;
 
     animation:
-        obstacle-animation
-        1.8s
-        infinite
-        linear;
+        obstacle-animation 1.8s infinite linear;
+
+    z-index: 5;
 }
 
 
-/* Movimento do obstáculo */
+/* ========================================
+   MOVIMENTO DO OBSTÁCULO
+======================================== */
 
 @keyframes obstacle-animation {
 
@@ -139,12 +181,11 @@ body {
 }
 
 
-/* ==========================================
+/* ========================================
    GAME OVER
-   ========================================== */
+======================================== */
 
 .game-over {
-
     visibility: hidden;
 
     display: flex;
@@ -165,42 +206,43 @@ body {
 }
 
 
-/* ==========================================
+/* ========================================
    BOTÃO REINICIAR
-   ========================================== */
+======================================== */
 
 .restart {
-
     height: 60px;
     width: 300px;
 
-    border-radius: 10px;
-
     border: none;
+    border-radius: 10px;
 
     font-size: 20px;
     font-weight: bold;
 
     background-color: #d4a72c;
-
     color: #111;
 
     cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        filter 0.15s ease;
 }
-
-
-/* Efeito ao passar o mouse */
 
 .restart:hover {
-
     transform: scale(1.05);
+    filter: brightness(1.1);
+}
 
+.restart:active {
+    transform: scale(0.97);
 }
 
 
-/* ==========================================
-   CELULAR
-   ========================================== */
+/* ========================================
+   RESPONSIVIDADE
+======================================== */
 
 @media (max-width: 620px) {
 
@@ -209,23 +251,29 @@ body {
     }
 
     .player {
-
         width: 110px;
         height: 110px;
 
         background-size: 440px 330px;
 
         left: 50px;
+    }
 
+    .player.crouching {
+        width: 110px;
+        height: 72px;
     }
 
     .obstacle {
-
         width: 50px;
         height: 70px;
 
         animation-duration: 1.5s;
-
     }
 
+    .restart {
+        width: 260px;
+        height: 55px;
+        font-size: 18px;
+    }
 }
