@@ -1,17 +1,18 @@
-/* ========================================
+/* =========================================================
+   AMAZON QUEST: ORIGEM
+   STYLE.CSS
+========================================================= */
+
+
+/* =========================================================
    RESET
-======================================== */
+========================================================= */
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
-
-
-/* ========================================
-   PÁGINA
-======================================== */
 
 html,
 body {
@@ -21,46 +22,221 @@ body {
 
 body {
     overflow: hidden;
-    background: #111;
     font-family: Arial, Helvetica, sans-serif;
+    background: #071b14;
+    color: white;
 }
 
 
-/* ========================================
-   ÁREA DO JOGO
-======================================== */
+/* =========================================================
+   MENU PRINCIPAL
+========================================================= */
 
-.game-board {
-    width: 100%;
-    height: 500px;
+.main-menu {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
 
-    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     overflow: hidden;
 
     background:
+        radial-gradient(
+            circle at 50% 35%,
+            rgba(58, 130, 82, 0.45),
+            transparent 40%
+        ),
         linear-gradient(
-            #63c4eb 0%,
-            #a9e3f5 58%,
-            #d8f3dc 58%,
-            #d8f3dc 100%
+            135deg,
+            #071b14 0%,
+            #0b3022 45%,
+            #102f20 100%
         );
-
-    border-bottom: 50px solid #3d7c3a;
 }
 
 
-/* ========================================
-   PERSONAGEM
-======================================== */
+/* brilho decorativo */
 
-.player {
-    width: 128px;
-    height: 128px;
+.main-menu::before {
+    content: "";
 
     position: absolute;
 
-    left: 100px;
-    bottom: 0;
+    width: 700px;
+    height: 700px;
+
+    left: -300px;
+    bottom: -350px;
+
+    border-radius: 50%;
+
+    background: rgba(31, 105, 62, 0.22);
+
+    filter: blur(5px);
+}
+
+
+.main-menu::after {
+    content: "";
+
+    position: absolute;
+
+    width: 500px;
+    height: 500px;
+
+    right: -200px;
+    top: -250px;
+
+    border-radius: 50%;
+
+    background: rgba(202, 159, 58, 0.12);
+
+    filter: blur(5px);
+}
+
+
+/* =========================================================
+   CONTEÚDO DO MENU
+========================================================= */
+
+.menu-content {
+    position: relative;
+    z-index: 5;
+
+    width: min(1100px, 92vw);
+    min-height: 90vh;
+
+    display: flex;
+    flex-direction: column;
+
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+}
+
+
+/* =========================================================
+   TÍTULO
+========================================================= */
+
+.game-title {
+    position: relative;
+    z-index: 10;
+
+    margin-top: -30px;
+}
+
+
+.title-small {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: bold;
+
+    letter-spacing: 5px;
+
+    color: #d9b85a;
+}
+
+
+.game-title h1 {
+    font-size: clamp(48px, 8vw, 100px);
+
+    line-height: 0.82;
+
+    font-weight: 900;
+
+    letter-spacing: -4px;
+
+    color: #f4e6bd;
+
+    text-shadow:
+        0 5px 0 #173e29,
+        0 9px 20px rgba(0, 0, 0, 0.5);
+}
+
+
+.game-title h1 span {
+    color: #d4a943;
+}
+
+
+.game-title h2 {
+    margin-top: 8px;
+
+    font-size: clamp(24px, 4vw, 42px);
+
+    letter-spacing: 14px;
+
+    color: #ffffff;
+
+    text-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.6);
+}
+
+
+.game-title p {
+    margin-top: 12px;
+
+    font-size: 14px;
+
+    letter-spacing: 3px;
+
+    color: #c8d7ce;
+}
+
+
+/* =========================================================
+   PERSONAGEM DO MENU
+========================================================= */
+
+.menu-character {
+    position: absolute;
+
+    width: 128px;
+    height: 128px;
+
+    right: 17%;
+    bottom: 25%;
+
+    z-index: 4;
+
+    animation:
+        menu-character-float
+        2.8s
+        ease-in-out
+        infinite;
+}
+
+
+.character-glow {
+    position: absolute;
+
+    width: 150px;
+    height: 45px;
+
+    left: -11px;
+    bottom: -5px;
+
+    border-radius: 50%;
+
+    background: rgba(0, 0, 0, 0.3);
+
+    filter: blur(8px);
+}
+
+
+.character-sprite {
+    position: relative;
+
+    width: 128px;
+    height: 128px;
 
     background-image:
         url("assets/amazon_quest_protagonist_spritesheet.png");
@@ -69,240 +245,948 @@ body {
 
     background-position: 0 0;
 
-    background-size: 512px 384px;
+    image-rendering: pixelated;
+}
 
+
+@keyframes menu-character-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-12px);
+    }
+}
+
+
+/* =========================================================
+   BOTÕES DO MENU
+========================================================= */
+
+.menu-buttons {
+    position: relative;
     z-index: 20;
 
-    transform-origin: bottom center;
+    display: flex;
+    flex-direction: column;
 
-    user-select: none;
-    pointer-events: none;
+    gap: 12px;
 
-    will-change: left, bottom, transform;
+    width: 300px;
+
+    margin-top: 32px;
 }
 
 
-/* ========================================
-   AGACHAMENTO
-======================================== */
+.menu-button {
+    width: 100%;
 
-.player.crouching {
+    min-height: 52px;
 
-    /*
-        A imagem fica visualmente mais baixa,
-        mas continua apoiada no chão.
-    */
-    transform:
-        scaleY(0.65);
+    padding: 12px 20px;
 
-    transform-origin: bottom center;
+    border: 2px solid rgba(216, 185, 90, 0.45);
+    border-radius: 10px;
+
+    background: rgba(7, 29, 21, 0.85);
+
+    color: #f5edda;
+
+    font-size: 15px;
+    font-weight: 800;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.18s ease,
+        background 0.18s ease,
+        border-color 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 
-/* ========================================
-   OBSTÁCULOS
-======================================== */
+.menu-button:hover {
+    transform: translateY(-3px);
 
-.obstacle {
+    background: #174b32;
+
+    border-color: #d9b85a;
+
+    box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+
+.menu-button:active {
+    transform: translateY(0);
+}
+
+
+.menu-button.primary {
+    min-height: 62px;
+
+    border-color: #d8b95a;
+
+    background:
+        linear-gradient(
+            180deg,
+            #d7ae46,
+            #a97d22
+        );
+
+    color: #132217;
+
+    font-size: 18px;
+
+    box-shadow:
+        0 8px 30px rgba(0, 0, 0, 0.3);
+}
+
+
+.menu-button.primary:hover {
+    background:
+        linear-gradient(
+            180deg,
+            #e6c260,
+            #bd902d
+        );
+
+    box-shadow:
+        0 10px 35px rgba(216, 185, 90, 0.25);
+}
+
+
+/* =========================================================
+   VERSÃO
+========================================================= */
+
+.game-version {
+    margin-top: 18px;
+
+    font-size: 10px;
+
+    letter-spacing: 2px;
+
+    color: rgba(255, 255, 255, 0.45);
+}
+
+
+.menu-footer {
     position: absolute;
-
-    width: 60px;
-    height: 80px;
-
-    bottom: 0;
-    left: 100%;
 
     z-index: 10;
 
-    border-radius: 8px 8px 0 0;
+    left: 0;
+    right: 0;
+    bottom: 18px;
 
-    background:
-        linear-gradient(
-            90deg,
-            #5a3515,
-            #80501f,
-            #5a3515
-        );
+    text-align: center;
 
-    box-shadow:
-        inset 4px 0 rgba(255,255,255,0.08),
-        inset -4px 0 rgba(0,0,0,0.12);
+    font-size: 12px;
+
+    color: rgba(255, 255, 255, 0.55);
 }
 
 
-/* ========================================
-   OBSTÁCULO BAIXO
-   PRECISA DE AGACHAMENTO
-======================================== */
-
-.obstacle.low {
-
-    width: 110px;
-    height: 58px;
-
-    border-radius: 6px;
-
-    background:
-        linear-gradient(
-            #315d35,
-            #214626
-        );
-
-    box-shadow:
-        inset 0 6px rgba(255,255,255,0.08),
-        inset 0 -6px rgba(0,0,0,0.15);
+.menu-footer strong {
+    color: #d9b85a;
 }
 
 
-/* ========================================
-   OBSTÁCULO ALTO
-   PRECISA DE PULO
-======================================== */
+/* =========================================================
+   TELAS DE INFORMAÇÃO
+========================================================= */
 
-.obstacle.high {
-
-    width: 65px;
-    height: 105px;
-
-    border-radius: 8px 8px 0 0;
-
-    background:
-        linear-gradient(
-            90deg,
-            #5a3515,
-            #8b5a28,
-            #5a3515
-        );
-}
-
-
-/* ========================================
-   OBSTÁCULO LARGO
-======================================== */
-
-.obstacle.long {
-
-    width: 150px;
-    height: 48px;
-
-    border-radius: 8px;
-
-    background:
-        linear-gradient(
-            #4b6635,
-            #304824
-        );
-}
-
-
-/* ========================================
-   GAME OVER
-======================================== */
-
-.game-over {
-
-    visibility: hidden;
-
-    display: flex;
-
+.information-screen {
     position: fixed;
 
     inset: 0;
+
+    z-index: 900;
+
+    display: none;
 
     justify-content: center;
     align-items: center;
 
     background:
-        rgba(0, 0, 0, 0.60);
-
-    z-index: 100;
+        radial-gradient(
+            circle at center,
+            rgba(30, 92, 58, 0.55),
+            transparent 55%
+        ),
+        #071b14;
 }
 
 
-/* ========================================
-   BOTÃO
-======================================== */
+.information-box {
+    width: min(600px, 90vw);
 
-.restart {
+    padding: 42px;
 
-    width: 300px;
-    height: 60px;
+    border: 2px solid rgba(216, 185, 90, 0.55);
+    border-radius: 18px;
 
-    border: none;
+    background:
+        linear-gradient(
+            145deg,
+            rgba(17, 62, 40, 0.98),
+            rgba(6, 29, 21, 0.98)
+        );
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.55);
+
+    text-align: center;
+}
+
+
+.information-box h2 {
+    margin-bottom: 30px;
+
+    color: #e1bd58;
+
+    font-size: 34px;
+
+    letter-spacing: 4px;
+}
+
+
+.information-text {
+    margin: 28px 0;
+
+    color: #d2ddd7;
+
+    line-height: 1.6;
+}
+
+
+/* =========================================================
+   CONTROLES
+========================================================= */
+
+.controls {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 12px;
+}
+
+
+.control {
+    padding: 18px 12px;
+
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 10px;
 
-    font-size: 20px;
-    font-weight: bold;
+    background: rgba(0, 0, 0, 0.2);
+}
 
-    background: #d4a72c;
-    color: #111;
+
+.control strong {
+    display: block;
+
+    margin-bottom: 6px;
+
+    color: #e1bd58;
+}
+
+
+.control span {
+    font-size: 12px;
+
+    color: #c6d1cb;
+}
+
+
+.back-button {
+    width: 220px;
+}
+
+
+/* =========================================================
+   CRÉDITOS
+========================================================= */
+
+.credits-box h3 {
+    margin-bottom: 10px;
+
+    color: #f0e3bd;
+
+    font-size: 22px;
+}
+
+
+.credits-box p {
+    margin-bottom: 25px;
+
+    color: #c6d1cb;
+}
+
+
+.credits-character {
+    display: flex;
+
+    justify-content: center;
+
+    margin-bottom: 20px;
+}
+
+
+.small-character-sprite {
+    width: 128px;
+    height: 128px;
+
+    background-image:
+        url("assets/amazon_quest_protagonist_spritesheet.png");
+
+    background-repeat: no-repeat;
+
+    background-position: 0 0;
+
+    image-rendering: pixelated;
+}
+
+
+.credit-line {
+    display: flex;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    padding: 12px 0;
+
+    border-bottom:
+        1px solid
+        rgba(255, 255, 255, 0.08);
+
+    color: #bfcac4;
+}
+
+
+.credit-line strong {
+    color: #e0bb57;
+}
+
+
+/* =========================================================
+   MAPA
+========================================================= */
+
+.map-screen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 800;
+
+    display: none;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 40%,
+            rgba(50, 120, 70, 0.45),
+            transparent 50%
+        ),
+        linear-gradient(
+            135deg,
+            #071b14,
+            #0d3925
+        );
+}
+
+
+.map-header {
+    position: absolute;
+
+    top: 35px;
+
+    left: 0;
+    right: 0;
+
+    text-align: center;
+}
+
+
+.map-header h2 {
+    color: #e2bd5b;
+
+    font-size: 32px;
+
+    letter-spacing: 4px;
+}
+
+
+.map-header span {
+    display: block;
+
+    margin-top: 5px;
+
+    color: #bdcec5;
+
+    font-size: 12px;
+
+    letter-spacing: 3px;
+}
+
+
+.map {
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 70px;
+}
+
+
+.map-location {
+    width: 190px;
+
+    min-height: 210px;
+
+    padding: 25px 15px;
+
+    border-radius: 18px;
+
+    text-align: center;
+
+    border: 2px solid rgba(255, 255, 255, 0.08);
+
+    background:
+        rgba(5, 25, 18, 0.8);
+
+    box-shadow:
+        0 15px 40px rgba(0, 0, 0, 0.35);
+}
+
+
+.map-location.unlocked {
+    border-color: #d5b457;
+
+    box-shadow:
+        0 0 35px rgba(213, 180, 87, 0.12);
+}
+
+
+.map-location.locked {
+    opacity: 0.42;
+}
+
+
+.location-icon {
+    font-size: 55px;
+
+    margin-bottom: 12px;
+}
+
+
+.map-location h3 {
+    margin-bottom: 5px;
+
+    color: #f2e5c0;
+
+    font-size: 18px;
+}
+
+
+.map-location span {
+    display: block;
+
+    margin-bottom: 18px;
+
+    color: #9eb0a6;
+
+    font-size: 11px;
+
+    letter-spacing: 2px;
+}
+
+
+.location-button {
+    padding: 9px 20px;
+
+    border: 1px solid #d8b95a;
+    border-radius: 7px;
+
+    background: #b78b2d;
+
+    color: #17251a;
+
+    font-weight: 800;
 
     cursor: pointer;
-
-    transition:
-        transform 0.15s ease,
-        filter 0.15s ease;
 }
+
+
+.location-button:hover {
+    background: #dfbf60;
+}
+
+
+.map-back {
+    position: absolute;
+
+    width: 150px;
+
+    left: 30px;
+    bottom: 30px;
+}
+
+
+/* =========================================================
+   TELA DO JOGO
+========================================================= */
+
+.game-screen {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 100;
+
+    display: none;
+
+    background: #000;
+}
+
+
+/* =========================================================
+   GAME BOARD
+========================================================= */
+
+.game-board {
+    width: 100%;
+    height: 100%;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            #63c4eb,
+            #dff5ff
+        );
+
+    border-bottom:
+        50px solid #26753b;
+}
+
+
+/* =========================================================
+   PERSONAGEM
+========================================================= */
+
+.player {
+    position: absolute;
+
+    width: 128px;
+    height: 128px;
+
+    bottom: 0;
+    left: 0;
+
+    background-image:
+        url("assets/amazon_quest_protagonist_spritesheet.png");
+
+    background-repeat: no-repeat;
+
+    background-position: 0 0;
+
+    image-rendering: pixelated;
+
+    z-index: 20;
+
+    will-change:
+        left,
+        bottom;
+}
+
+
+.player.crouching {
+    height: 80px;
+
+    transform-origin: bottom center;
+}
+
+
+/* =========================================================
+   OBSTÁCULOS
+========================================================= */
+
+.obstacle {
+    position: absolute;
+
+    background:
+        linear-gradient(
+            90deg,
+            #5b351e,
+            #8a542e,
+            #5b351e
+        );
+
+    border:
+        3px solid #3c2417;
+
+    border-radius: 6px;
+
+    box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+
+
+.obstacle.high {
+    background:
+        linear-gradient(
+            90deg,
+            #4e2d1a,
+            #86502b,
+            #4e2d1a
+        );
+}
+
+
+.obstacle.low {
+    background:
+        linear-gradient(
+            90deg,
+            #614020,
+            #9b6535,
+            #614020
+        );
+}
+
+
+.obstacle.long {
+    background:
+        linear-gradient(
+            90deg,
+            #422615,
+            #7a4928,
+            #422615
+        );
+}
+
+
+/* =========================================================
+   HUD
+========================================================= */
+
+.game-hud {
+    position: absolute;
+
+    z-index: 50;
+
+    top: 18px;
+
+    left: 0;
+    right: 0;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding:
+        0 25px;
+
+    pointer-events: none;
+
+    font-weight: 900;
+
+    text-shadow:
+        0 2px 4px rgba(0, 0, 0, 0.65);
+}
+
+
+.hud-lives,
+.hud-score,
+.hud-stage {
+    padding: 10px 16px;
+
+    border:
+        1px solid
+        rgba(255, 255, 255, 0.18);
+
+    border-radius: 10px;
+
+    background:
+        rgba(0, 0, 0, 0.38);
+
+    backdrop-filter: blur(5px);
+}
+
+
+.hud-stage {
+    color: #f3e3b5;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================================
+   GAME OVER
+========================================================= */
+
+.game-over {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 200;
+
+    visibility: hidden;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background:
+        rgba(2, 10, 7, 0.78);
+
+    backdrop-filter: blur(5px);
+}
+
+
+.game-over-box {
+    width: min(420px, 90vw);
+
+    padding: 40px 30px;
+
+    border:
+        2px solid
+        rgba(216, 185, 90, 0.55);
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #113d28,
+            #061d15
+        );
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px
+        rgba(0, 0, 0, 0.65);
+}
+
+
+.game-over-box h2 {
+    margin-bottom: 10px;
+
+    color: #e1bd58;
+
+    font-size: 34px;
+
+    letter-spacing: 3px;
+}
+
+
+.game-over-box p {
+    margin-bottom: 25px;
+
+    color: #b9c9c0;
+}
+
+
+.game-over-box .restart,
+.game-over-box .menu-button {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 10px;
+}
+
+
+.restart {
+    height: 55px;
+
+    border: none;
+
+    border-radius: 9px;
+
+    background:
+        linear-gradient(
+            180deg,
+            #d6ae4b,
+            #a67b25
+        );
+
+    color: #142116;
+
+    font-size: 16px;
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
 
 .restart:hover {
-    transform: scale(1.05);
-    filter: brightness(1.1);
+    background:
+        linear-gradient(
+            180deg,
+            #e5c05e,
+            #bc902e
+        );
 }
 
-.restart:active {
-    transform: scale(0.97);
-}
 
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
 
-/* ========================================
-   CELULAR
-======================================== */
+@media (max-width: 800px) {
 
-@media (max-width: 620px) {
+    .menu-character {
+        right: 8%;
+        bottom: 25%;
 
-    .game-board {
-        height: 400px;
+        transform: scale(0.85);
     }
 
-    .player {
-
-        width: 110px;
-        height: 110px;
-
-        background-size:
-            440px 330px;
-
-        left: 50px;
+    .game-title h1 {
+        letter-spacing: -2px;
     }
 
-    .player.crouching {
+    .map {
+        gap: 20px;
+
         transform:
-            scaleY(0.65);
+            translate(-50%, -50%)
+            scale(0.82);
     }
 
-    .obstacle {
-        width: 50px;
+}
+
+
+@media (max-width: 600px) {
+
+    .title-small {
+        font-size: 10px;
+
+        letter-spacing: 3px;
     }
 
-    .obstacle.low {
-        width: 90px;
-        height: 50px;
+
+    .game-title h1 {
+        font-size: 48px;
     }
 
-    .obstacle.high {
-        width: 55px;
-        height: 90px;
+
+    .game-title h2 {
+        font-size: 25px;
+
+        letter-spacing: 8px;
     }
 
-    .obstacle.long {
-        width: 125px;
-        height: 42px;
+
+    .menu-character {
+        position: relative;
+
+        right: auto;
+        bottom: auto;
+
+        margin-top: 15px;
+
+        transform: scale(0.7);
     }
 
-    .restart {
-        width: 260px;
-        height: 55px;
 
-        font-size: 18px;
+    .menu-buttons {
+        width: min(300px, 85vw);
+
+        margin-top: 5px;
     }
+
+
+    .controls {
+        grid-template-columns: 1fr;
+    }
+
+
+    .information-box {
+        padding: 28px 20px;
+    }
+
+
+    .map {
+        gap: 10px;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.65);
+    }
+
+
+    .map-header h2 {
+        font-size: 25px;
+    }
+
+
+    .game-hud {
+        padding: 0 10px;
+
+        font-size: 12px;
+    }
+
+
+    .hud-lives,
+    .hud-score,
+    .hud-stage {
+        padding: 7px 9px;
+    }
+
+}
+
+
+/* =========================================================
+   ANIMAÇÕES EXTRAS
+========================================================= */
+
+@keyframes button-pulse {
+
+    0%,
+    100% {
+        box-shadow:
+            0 0 0
+            rgba(216, 185, 90, 0);
+    }
+
+    50% {
+        box-shadow:
+            0 0 25px
+            rgba(216, 185, 90, 0.25);
+    }
+}
+
+
+.menu-button.primary {
+    animation:
+        button-pulse
+        2.5s
+        ease-in-out
+        infinite;
 }
