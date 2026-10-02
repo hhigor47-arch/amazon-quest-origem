@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Amazon Quest: Origem</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    background: #020817;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+}
+
+#game {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 50% 30%, rgba(20,55,120,.35), transparent 45%),
+        linear-gradient(#020817, #061735);
+}
+
+/* ESTRELAS */
+
+.stars,
+.stars::before,
+.stars::after {
+    position: absolute;
+    inset: 0;
+    content: "";
+    pointer-events: none;
+}
+
+.stars {
+    background-image:
+        radial-gradient(circle, white 1px, transparent 1px),
+        radial-gradient(circle, #8bbcff 1px, transparent 1px);
+    background-size: 90px 90px, 140px 140px;
+    animation: starsMove 25s linear infinite;
+    opacity: .6;
+}
+
+.stars::before {
+    background-image:
+        radial-gradient(circle, white 1px, transparent 1px);
+    background-size: 180px 180px;
+    animation: starsMove 40s linear infinite reverse;
+}
+
+@keyframes starsMove {
+    from { transform: translateY(0); }
+    to { transform: translateY(90px); }
+}
+
+/* MENU */
+
+#menu {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.menu-box {
+    width: min(90%, 600px);
+    text-align: center;
+    padding: 45px 30px;
+    background: rgba(3, 15, 40, .82);
+    border: 1px solid rgba(247,196,0,.35);
+    border-radius: 20px;
+    box-shadow:
+        0 0 50px rgba(0, 0, 0, .7),
+        inset 0 0 40px rgba(10,46,122,.25);
+    backdrop-filter: blur(8px);
+}
+
+.logo {
+    font-size: clamp(38px, 7vw, 72px);
+    font-weight: 900;
+    letter-spacing: 3px;
+    color: #fff;
+    text-shadow:
+        0 0 10px rgba(247,196,0,.7),
+        0 0 30px rgba(247,196,0,.3);
+}
+
+.logo span {
+    color: #f7c400;
+}
+
+.subtitle {
+    margin-top: 8px;
+    color: #b8c9e8;
+    letter-spacing: 4px;
+    font-size: 13px;
+    text-transform: uppercase;
+}
+
+.menu-buttons {
+    margin-top: 45px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+}
+
+.menu-button {
+    width: min(100%, 300px);
+    padding: 17px 25px;
+    border: 1px solid #f7c400;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #0a2e7a, #061d4f);
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.menu-button:hover {
+    transform: scale(1.04);
+    background: linear-gradient(135deg, #123f99, #0a2e7a);
+    box-shadow: 0 0 25px rgba(247,196,0,.35);
+}
+
+.menu-button.gold {
+    background: linear-gradient(135deg, #f7c400, #b88c00);
+    color: #071735;
+}
+
+/* JOGO */
+
+#gameWorld {
+    display: none;
+    position: absolute;
+    inset: 0;
+}
+
+#world {
+    position: absolute;
+    width: 1800px;
+    height: 1000px;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background:
+        linear-gradient(rgba(0,30,15,.25), rgba(0,30,15,.25)),
+        repeating-linear-gradient(
+            0deg,
+            #4c8b45 0px,
+            #4c8b45 50px,
+            #518f49 51px,
+            #518f49 100px
+        );
+}
+
+/* ESTRADA */
+
+.road {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 430px;
+    height: 150px;
+    background: #242831;
+    border-top: 8px solid #50545c;
+    border-bottom: 8px solid #50545c;
+}
+
+.road::after {
+    content: "";
+    position: absolute;
+    top: 69px;
+    left: 0;
+    width: 100%;
+    border-top: 7px dashed #f7c400;
+}
+
+/* ESCOLA */
+
+.school {
+    position: absolute;
+    left: 250px;
+    top: 130px;
+    width: 900px;
+    height: 270px;
+    background: #e9edf4;
+    border: 8px solid #0a2e7a;
+    border-radius: 8px;
+    box-shadow: 0 15px 30px rgba(0,0,0,.4);
+}
+
+.school-roof {
+    position: absolute;
+    left: -25px;
+    right: -25px;
+    top: -45px;
+    height: 55px;
+    background: #0a2e7a;
+    border-bottom: 10px solid #f7c400;
+}
+
+.school-sign {
+    position: absolute;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 12px 35px;
+    background: #0a2e7a;
+    border: 3px solid #f7c400;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.window {
+    position: absolute;
+    top: 105px;
+    width: 100px;
+    height: 75px;
+    background: #80b8e8;
+    border: 6px solid #0a2e7a;
+}
+
+.window:nth-child(3) { left: 80px; }
+.window:nth-child(4) { left: 230px; }
+.window:nth-child(5) { left: 380px; }
+.window:nth-child(6) { left: 530px; }
+.window:nth-child(7) { left: 680px; }
+
+.door {
+    position: absolute;
+    width: 100px;
+    height: 160px;
+    bottom: 0;
+    left: 400px;
+    background: #4d2e1c;
+    border: 8px solid #0a2e7a;
+}
+
+/* SECRETARIA */
+
+.secretaria {
+    position: absolute;
+    left: 1150px;
+    top: 260px;
+    width: 330px;
+    height: 210px;
+    background: #fff;
+    border: 7px solid #0a2e7a;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0,0,0,.4);
+}
+
+.secretaria .sign {
+    background: #f7c400;
+    color: #071735;
+    text-align: center;
+    padding: 13px;
+    font-weight: 900;
+    font-size: 22px;
+}
+
+.counter {
+    position: absolute;
+    left: 45px;
+    right: 45px;
+    bottom: 30px;
+    height: 55px;
+    background: #9a6846;
+    border: 5px solid #59351f;
+}
+
+/* PORTÃO */
+
+.gate {
+    position: absolute;
+    left: 70px;
+    top: 300px;
+    width: 100px;
+    height: 180px;
+    border: 8px solid #0a2e7a;
+    background: repeating-linear-gradient(
+        90deg,
+        #777 0px,
+        #777 12px,
+        transparent 12px,
+        transparent 25px
+    );
+}
+
+/* PERSONAGEM */
+
+#player {
+    position: absolute;
+    width: 38px;
+    height: 55px;
+    background: #173b75;
+    border: 3px solid white;
+    border-radius: 12px 12px 7px 7px;
+    z-index: 5;
+    transition: transform .05s linear;
+}
+
+#player::before {
+    content: "";
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    background: #c88961;
+    border-radius: 50%;
+    left: 4px;
+    top: -25px;
+    border: 3px solid white;
+}
+
+/* HUD */
+
+#hud {
+    position: fixed;
+    left: 20px;
+    top: 20px;
+    z-index: 20;
+    display: none;
+}
+
+.hud-box {
+    background: rgba(3,15,40,.88);
+    border: 1px solid #f7c400;
+    border-radius: 10px;
+    padding: 15px 20px;
+    min-width: 280px;
+}
+
+.hud-title {
+    color: #f7c400;
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+#mission {
+    margin-top: 5px;
+    font-size: 15px;
+}
+
+/* INTERAÇÃO */
+
+#interaction {
+    position: fixed;
+    left: 50%;
+    bottom: 35px;
+    transform: translateX(-50%);
+    z-index: 30;
+    display: none;
+    background: rgba(3,15,40,.94);
+    border: 2px solid #f7c400;
+    border-radius: 12px;
+    padding: 14px 25px;
+    text-align: center;
+}
+
+.key {
+    display: inline-block;
+    padding: 3px 8px;
+    background: #f7c400;
+    color: #071735;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+/* DIÁLOGO */
+
+#dialogue {
+    display: none;
+    position: fixed;
+    left: 50%;
+    bottom: 25px;
+    transform: translateX(-50%);
+    width: min(90%, 800px);
+    z-index: 50;
+    background: rgba(3,15,40,.97);
+    border: 2px solid #f7c400;
+    border-radius: 15px;
+    padding: 22px;
+}
+
+.dialogue-name {
+    color: #f7c400;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#dialogueText {
+    line-height: 1.6;
+    font-size: 16px;
+}
+
+#dialogueHint {
+    margin-top: 15px;
+    color: #8da4c9;
+    font-size: 12px;
+}
+
+/* CONFIG */
+
+#settings {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0,0,0,.7);
+}
+
+.settings-box {
+    width: min(90%, 450px);
+    background: #071735;
+    border: 2px solid #f7c400;
+    border-radius: 15px;
+    padding: 30px;
+}
+
+.settings-box h2 {
+    color: #f7c400;
+    margin-bottom: 25px;
+}
+
+.close {
+    margin-top: 25px;
+}
+
+/* CONTROLES */
+
+#controls {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 20;
+    display: none;
+    background: rgba(3,15,40,.75);
+    padding: 10px 15px;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #c4d2e8;
+}
+
+/* MOBILE */
+
+@media(max-width:700px) {
+    .school {
+        transform: scale(.7);
+        transform-origin: top left;
+    }
+
+    .hud-box {
+        min-width: 220px;
+    }
+
+    #controls {
+        display: none !important;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+
+    <div class="stars"></div>
+
+    <!-- MENU -->
+
+    <section id="menu">
+        <div class="menu-box">
+
+            <div class="logo">
+                AMAZON <span>QUEST</span>
+            </div>
+
+            <div class="subtitle">
+                ORIGEM
+            </div>
+
+            <div class="menu-buttons">
+
+                <button class="menu-button gold" onclick="startGame()">
+                    JOGAR
+                </button>
+
+                <button class="menu-button" onclick="openSettings()">
+                    CONFIGURAÇÕES
+                </button>
+
+            </div>
+
+            <div style="
+                margin-top:35px;
+                font-size:11px;
+                color:#7185a8;
+                letter-spacing:1px;
+            ">
+                BETA — FASE DA SECRETARIA
+            </div>
+
+        </div>
+    </section>
+
+    <!-- CONFIGURAÇÕES -->
+
+    <section id="settings">
+
+        <div class="settings-box">
+
+            <h2>CONFIGURAÇÕES</h2>
+
+            <p style="color:#aabbd7;line-height:1.6;">
+                Amazon Quest: Origem<br>
+                Beta de desenvolvimento
+            </p>
+
+            <button
+                class="menu-button close"
+                onclick="closeSettings()">
+                VOLTAR
+            </button>
+
+        </div>
+
+    </section>
+
+    <!-- MUNDO -->
+
+    <section id="gameWorld">
+
+        <div id="world">
+
+            <div class="school">
+
+                <div class="school-roof"></div>
+
+                <div class="school-sign">
+                    ESCOLA
+                </div>
+
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+                <div class="window"></div>
+
+                <div class="door"></div>
+
+            </div>
+
+            <div class="secretaria">
+
+                <div class="sign">
+                    SECRETARIA
+                </div>
+
+                <div class="counter"></div>
+
+            </div>
+
+            <div class="gate"></div>
+
+            <div class="road"></div>
+
+            <div id="player"></div>
+
+        </div>
+
+    </section>
+
+    <!-- HUD -->
+
+    <div id="hud">
+
+        <div class="hud-box">
+
+            <div class="hud-title">
+                MISSÃO ATUAL
+            </div>
+
+            <div id="mission">
+                Entre na escola e procure a Secretaria.
+            </div>
+
+        </div>
+
+    </div>
+
+    <div id="controls">
+        WASD / SETAS — MOVER &nbsp; | &nbsp; E — INTERAGIR
+    </div>
+
+    <div id="interaction">
+        Pressione <span class="key">E</span> para interagir
+    </div>
+
+    <!-- DIÁLOGO -->
+
+    <div id="dialogue">
+
+        <div class="dialogue-name">
+            SECRETARIA
+        </div>
+
+        <div id="dialogueText"></div>
+
+        <div id="dialogueHint">
+            Pressione ENTER para continuar
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* ============================
+   AMAZON QUEST — SISTEMA BASE
+   ============================ */
+
+const menu = document.getElementById("menu");
+const gameWorld = document.getElementById("gameWorld");
+const settings = document.getElementById("settings");
+const player = document.getElementById("player");
+const hud = document.getElementById("hud");
+const controls = document.getElementById("controls");
+const interaction = document.getElementById("interaction");
+const dialogue = document.getElementById("dialogue");
+const dialogueText = document.getElementById("dialogueText");
+const mission = document.getElementById("mission");
+
+let playing = false;
+
+let playerX = 180;
+let playerY = 520;
+
+let speed = 5;
+
+let nearSecretaria = false;
+let dialogueOpen = false;
+let dialogueStep = 0;
+
+const dialogueLines = [
+    "Olá! Você está procurando a secretaria?",
+    "Pode entrar. Precisamos conversar sobre uma coisa importante.",
+    "Parece que sua aventura está apenas começando..."
+];
+
+/* MENU */
+
+function startGame() {
+
+    menu.style.display = "none";
+
+    gameWorld.style.display = "block";
+    hud.style.display = "block";
+    controls.style.display = "block";
+
+    playing = true;
+
+    updatePlayer();
+}
+
+function openSettings() {
+    settings.style.display = "flex";
+}
+
+function closeSettings() {
+    settings.style.display = "none";
+}
+
+/* PLAYER */
+
+function updatePlayer() {
+
+    player.style.left = playerX + "px";
+    player.style.top = playerY + "px";
+
+}
+
+/* MOVIMENTO */
+
+const keys = {};
+
+document.addEventListener("keydown", function(event) {
+
+    keys[event.key.toLowerCase()] = true;
+
+    if (event.key === "Enter" && dialogueOpen) {
+
+        dialogueStep++;
+
+        if (dialogueStep >= dialogueLines.length) {
+
+            closeDialogue();
+
+        } else {
+
+            dialogueText.textContent =
+                dialogueLines[dialogueStep];
+
+        }
+
+        return;
+    }
+
+    if (
+        event.key.toLowerCase() === "e" &&
+        nearSecretaria &&
+        !dialogueOpen
+    ) {
+
+        openDialogue();
+
+    }
+
+});
+
+document.addEventListener("keyup", function(event) {
+
+    keys[event.key.toLowerCase()] = false;
+
+});
+
+function gameLoop() {
+
+    if (playing && !dialogueOpen) {
+
+        if (keys["w"] || keys["arrowup"]) {
+            playerY -= speed;
+        }
+
+        if (keys["s"] || keys["arrowdown"]) {
+            playerY += speed;
+        }
+
+        if (keys["a"] || keys["arrowleft"]) {
+            playerX -= speed;
+        }
+
+        if (keys["d"] || keys["arrowright"]) {
+            playerX += speed;
+        }
+
+        /* LIMITES DO MAPA */
+
+        playerX = Math.max(10, Math.min(1750, playerX));
+        playerY = Math.max(40, Math.min(900, playerY));
+
+        updatePlayer();
+
+        checkSecretaria();
+
+    }
+
+    requestAnimationFrame(gameLoop);
+
+}
+
+/* SECRETARIA */
+
+function checkSecretaria() {
+
+    const secretariaX = 1150;
+    const secretariaY = 260;
+
+    const distance = Math.sqrt(
+        Math.pow(playerX - secretariaX, 2) +
+        Math.pow(playerY - secretariaY, 2)
+    );
+
+    if (distance < 170) {
+
+        nearSecretaria = true;
+        interaction.style.display = "block";
+
+        mission.textContent =
+            "Você encontrou a Secretaria. Pressione E.";
+
+    } else {
+
+        nearSecretaria = false;
+        interaction.style.display = "none";
+
+    }
+
+}
+
+/* DIÁLOGO */
+
+function openDialogue() {
+
+    dialogueOpen = true;
+
+    dialogueStep = 0;
+
+    dialogueText.textContent =
+        dialogueLines[dialogueStep];
+
+    dialogue.style.display = "block";
+
+    interaction.style.display = "none";
+
+    mission.textContent =
+        "Converse com a Secretaria.";
+
+}
+
+function closeDialogue() {
+
+    dialogueOpen = false;
+
+    dialogue.style.display = "none";
+
+    mission.textContent =
+        "Missão concluída! Em breve teremos a próxima parte.";
+
+}
+
+/* INICIA O JOGO */
+
+gameLoop();
+
+</script>
+
+</body>
+</html>
