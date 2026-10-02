@@ -3,30 +3,40 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>Amazon Quest: Origem</title>
 
-    <link rel="stylesheet" href="style.css">
-    <script src="script.js" defer></script>
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+    <script
+        src="script.js"
+        defer
+    ></script>
 </head>
 
 <body>
 
-    <div class="game-board">
+    <!-- ÁREA PRINCIPAL DO JOGO -->
+    <main class="game-board">
 
-        <!-- Cenário temporário -->
-        <img src="assets/imgs/clouds.png" class="cloud">
-
-        <!-- Protagonista do Amazon Quest -->
+        <!-- PERSONAGEM -->
         <div class="player"></div>
 
-        <!-- Obstáculo temporário -->
-        <img src="assets/imgs/pipe.png" class="pipe">
+        <!-- PRIMEIRO OBSTÁCULO -->
+        <div class="obstacle"></div>
 
-    </div>
+    </main>
 
-    <!-- Tela de Game Over -->
+
+    <!-- TELA DE GAME OVER -->
     <div class="game-over">
 
         <button class="restart">
