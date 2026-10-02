@@ -22,23 +22,438 @@
     ></script>
 </head>
 
+
 <body>
 
-    <main class="game-board">
 
-        <div class="player"></div>
+    <!-- ==================================================
+         MENU PRINCIPAL
+    ================================================== -->
 
-        <div class="obstacle"></div>
+    <section
+        class="main-menu"
+        id="main-menu"
+    >
 
-    </main>
+        <div class="menu-content">
 
-    <div class="game-over">
+            <div class="game-title">
 
-        <button class="restart">
-            REINICIAR
+                <span class="title-small">
+                    UMA AVENTURA PELA AMAZÔNIA
+                </span>
+
+                <h1>
+                    AMAZON
+                    <span>QUEST</span>
+                </h1>
+
+                <h2>
+                    ORIGEM
+                </h2>
+
+                <p>
+                    Conhecimento • Cultura • Aventura
+                </p>
+
+            </div>
+
+
+            <!-- PERSONAGEM DO MENU -->
+
+            <div class="menu-character">
+                <div class="character-sprite"></div>
+            </div>
+
+
+            <!-- BOTÕES -->
+
+            <div class="menu-buttons">
+
+                <button
+                    class="menu-button primary"
+                    id="play-button"
+                >
+                    ▶ JOGAR
+                </button>
+
+
+                <button
+                    class="menu-button"
+                    id="how-to-play-button"
+                >
+                    ? COMO JOGAR
+                </button>
+
+
+                <button
+                    class="menu-button"
+                    id="credits-button"
+                >
+                    ★ CRÉDITOS
+                </button>
+
+            </div>
+
+
+            <div class="game-version">
+                AMAZON QUEST: ORIGEM • v0.1
+            </div>
+
+        </div>
+
+
+        <footer class="menu-footer">
+
+            Desenvolvido por
+            <strong>Igor Felipe</strong>
+
+        </footer>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         COMO JOGAR
+    ================================================== -->
+
+    <section
+        class="information-screen"
+        id="how-to-play"
+    >
+
+        <div class="information-box">
+
+            <h2>COMO JOGAR</h2>
+
+
+            <div class="controls">
+
+                <div class="control">
+                    <strong>A / ←</strong>
+                    <span>Andar para esquerda</span>
+                </div>
+
+                <div class="control">
+                    <strong>D / →</strong>
+                    <span>Andar para direita</span>
+                </div>
+
+                <div class="control">
+                    <strong>W / ↑ / ESPAÇO</strong>
+                    <span>Pular</span>
+                </div>
+
+                <div class="control">
+                    <strong>S / ↓</strong>
+                    <span>Agachar</span>
+                </div>
+
+            </div>
+
+
+            <p class="information-text">
+
+                Explore o mundo, supere obstáculos,
+                descubra caminhos e complete sua missão.
+
+            </p>
+
+
+            <button
+                class="menu-button back-button"
+                id="back-from-how"
+            >
+                ← VOLTAR
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         CRÉDITOS
+    ================================================== -->
+
+    <section
+        class="information-screen"
+        id="credits"
+    >
+
+        <div class="information-box credits-box">
+
+            <h2>CRÉDITOS</h2>
+
+
+            <div class="credits-character">
+
+                <div class="small-character-sprite"></div>
+
+            </div>
+
+
+            <h3>
+                AMAZON QUEST: ORIGEM
+            </h3>
+
+
+            <p>
+                Uma aventura inspirada na Amazônia,
+                na cultura e no conhecimento.
+            </p>
+
+
+            <div class="credit-line">
+
+                <span>Desenvolvimento</span>
+
+                <strong>
+                    Igor Felipe
+                </strong>
+
+            </div>
+
+
+            <div class="credit-line">
+
+                <span>Programação</span>
+
+                <strong>
+                    Igor Felipe + IA
+                </strong>
+
+            </div>
+
+
+            <div class="credit-line">
+
+                <span>Projeto</span>
+
+                <strong>
+                    Festival Cultural
+                </strong>
+
+            </div>
+
+
+            <button
+                class="menu-button back-button"
+                id="back-from-credits"
+            >
+                ← VOLTAR
+            </button>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ==================================================
+         MAPA
+    ================================================== -->
+
+    <section
+        class="map-screen"
+        id="map-screen"
+    >
+
+        <div class="map-header">
+
+            <h2>
+                AMAZON QUEST
+            </h2>
+
+            <span>
+                MAPA DA AVENTURA
+            </span>
+
+        </div>
+
+
+        <div class="map">
+
+
+            <!-- PRIMEIRA FASE -->
+
+            <div
+                class="map-location unlocked"
+            >
+
+                <div class="location-icon">
+                    🏫
+                </div>
+
+
+                <h3>
+                    SECRETARIA
+                </h3>
+
+
+                <span>
+                    FASE 01
+                </span>
+
+
+                <button
+                    class="location-button"
+                    id="secretaria-button"
+                >
+                    ENTRAR
+                </button>
+
+            </div>
+
+
+
+            <!-- FUTURA FASE -->
+
+            <div
+                class="map-location locked"
+            >
+
+                <div class="location-icon">
+                    🌳
+                </div>
+
+
+                <h3>
+                    ??? 
+                </h3>
+
+
+                <span>
+                    BLOQUEADO
+                </span>
+
+            </div>
+
+
+
+            <!-- FUTURA FASE -->
+
+            <div
+                class="map-location locked"
+            >
+
+                <div class="location-icon">
+                    🏞️
+                </div>
+
+
+                <h3>
+                    ???
+                </h3>
+
+
+                <span>
+                    BLOQUEADO
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="menu-button map-back"
+            id="map-back"
+        >
+            ← MENU
         </button>
 
-    </div>
+    </section>
+
+
+
+    <!-- ==================================================
+         JOGO
+    ================================================== -->
+
+    <section
+        class="game-screen"
+        id="game-screen"
+    >
+
+
+        <!-- HUD DO JOGO -->
+
+        <div class="game-hud">
+
+
+            <div class="hud-lives">
+                ❤️ ❤️ ❤️
+            </div>
+
+
+            <div class="hud-stage">
+                FASE 01
+            </div>
+
+
+            <div class="hud-score">
+                🪙 000
+            </div>
+
+
+        </div>
+
+
+
+        <!-- ==================================================
+             ESTRUTURA ORIGINAL DO GAMEPLAY
+        ================================================== -->
+
+        <main class="game-board">
+
+            <div class="player"></div>
+
+            <div class="obstacle"></div>
+
+        </main>
+
+
+
+        <!-- ==================================================
+             GAME OVER
+        ================================================== -->
+
+        <div class="game-over">
+
+            <div class="game-over-box">
+
+                <h2>
+                    FIM DE JOGO
+                </h2>
+
+
+                <p>
+                    A aventura ainda não acabou.
+                </p>
+
+
+                <button class="restart">
+                    REINICIAR
+                </button>
+
+
+                <button
+                    class="menu-button"
+                    id="game-menu-button"
+                >
+                    MENU PRINCIPAL
+                </button>
+
+            </div>
+
+        </div>
+
+
+    </section>
+
 
 </body>
 
