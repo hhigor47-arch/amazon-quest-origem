@@ -6,6 +6,32 @@ const restartButton = document.querySelector('.restart');
 
 
 // ======================================================
+// CONFIGURAÇÕES DO MUNDO
+// ======================================================
+
+const WORLD_WIDTH = 6000;
+
+const PLAYER_WIDTH = 128;
+const PLAYER_HEIGHT = 128;
+
+
+// ======================================================
+// FÍSICA
+// ======================================================
+
+const GRAVITY = 0.82;
+const JUMP_FORCE = 16;
+
+const MAX_SPEED = 7;
+const ACCELERATION = 0.7;
+
+const AIR_CONTROL = 0.45;
+
+const GROUND_FRICTION = 0.78;
+const AIR_FRICTION = 0.97;
+
+
+// ======================================================
 // ESTADO DO JOGO
 // ======================================================
 
@@ -17,27 +43,24 @@ let isCrouching = false;
 let velocityX = 0;
 let velocityY = 0;
 
-let playerX = 100;
+
+// ======================================================
+// POSIÇÃO NO MUNDO
+// ======================================================
+
+let playerX = 200;
 let playerY = 0;
 
 
 // ======================================================
-// FÍSICA
+// CÂMERA
 // ======================================================
 
-const GRAVITY = 0.82;
+let cameraX = 0;
 
-const JUMP_FORCE = 16;
+const CAMERA_OFFSET = 300;
 
-const MAX_SPEED = 7;
-
-const ACCELERATION = 0.7;
-
-const AIR_CONTROL = 0.45;
-
-const GROUND_FRICTION = 0.78;
-
-const AIR_FRICTION = 0.97;
+const CAMERA_SMOOTHING = 0.12;
 
 
 // ======================================================
@@ -56,6 +79,7 @@ const keys = {
 // ======================================================
 
 let currentFrame = 0;
+let walkTimer = 0;
 
 const setFrame = (column, row) => {
 
@@ -65,24 +89,8 @@ const setFrame = (column, row) => {
 
 
 // ======================================================
-// CONFIGURAÇÃO DO JOGADOR
+// HITBOX
 // ======================================================
-
-const PLAYER_WIDTH = 128;
-const PLAYER_HEIGHT = 128;
-
-
-// ======================================================
-// HITBOX PERSONALIZADA
-// ======================================================
-
-/*
-    A imagem tem 128x128, mas não vamos considerar
-    toda a imagem como corpo.
-
-    Isso evita morrer quando uma parte transparente
-    da sprite encosta no obstáculo.
-*/
 
 const getPlayerHitbox = () => {
 
@@ -103,6 +111,173 @@ const getPlayerHitbox = () => {
         width: 74,
         height: 108
     };
+};
+
+
+// ======================================================
+// FASE
+// ======================================================
+
+const levelObjects = [
+
+    // ------------------------------------
+    // PRIMEIRO OBSTÁCULO
+    // ------------------------------------
+
+    {
+        x: 700,
+        width: 70,
+        height: 100,
+        type: 'high'
+    },
+
+
+    // ------------------------------------
+    // OBSTÁCULO BAIXO
+    // ------------------------------------
+
+    {
+        x: 1100,
+        width: 120,
+        height: 55,
+        type: 'low'
+    },
+
+
+    // ------------------------------------
+    // OUTRO SALTO
+    // ------------------------------------
+
+    {
+        x: 1550,
+        width: 70,
+        height: 110,
+        type: 'high'
+    },
+
+
+    // ------------------------------------
+    // COMBINAÇÃO
+    // ------------------------------------
+
+    {
+        x: 1900,
+        width: 70,
+        height: 95,
+        type: 'high'
+    },
+
+    {
+        x: 2200,
+        width: 120,
+        height: 55,
+        type: 'low'
+    },
+
+
+    // ------------------------------------
+    // OBSTÁCULO LONGO
+    // ------------------------------------
+
+    {
+        x: 2700,
+        width: 160,
+        height: 48,
+        type: 'long'
+    },
+
+
+    // ------------------------------------
+    // SEQUÊNCIA
+    // ------------------------------------
+
+    {
+        x: 3150,
+        width: 70,
+        height: 105,
+        type: 'high'
+    },
+
+    {
+        x: 3450,
+        width: 120,
+        height: 55,
+        type: 'low'
+    },
+
+    {
+        x: 3800,
+        width: 70,
+        height: 115,
+        type: 'high'
+    },
+
+
+    // ------------------------------------
+    // TRECHO FINAL
+    // ------------------------------------
+
+    {
+        x: 4300,
+        width: 150,
+        height: 50,
+        type: 'long'
+    },
+
+    {
+        x: 4700,
+        width: 70,
+        height: 115,
+        type: 'high'
+    }
+];
+
+
+// ======================================================
+// RENDERIZAÇÃO DOS OBJETOS DA FASE
+// ======================================================
+
+const obstacleElements = [];
+
+const createLevelObjects = () => {
+
+    levelObjects.forEach((object) => {
+
+        const element =
+            document.createElement('div');
+
+        element.classList.add(
+            'obstacle',
+            object.type
+        );
+
+        element.style.position =
+            'absolute';
+
+        element.style.left =
+            `${object.x}px`;
+
+        element.style.bottom =
+            '0px';
+
+        element.style.width =
+            `${object.width}px`;
+
+        element.style.height =
+            `${object.height}px`;
+
+        element.style.animation =
+            'none';
+
+        gameBoard.appendChild(
+            element
+        );
+
+        obstacleElements.push({
+            data: object,
+            element: element
+        });
+    });
 };
 
 
@@ -160,16 +335,13 @@ const updateHorizontalMovement = () => {
     }
 
 
-    // Fricção
+    // Atrito
 
     if (!keys.left && !keys.right) {
 
         if (isGrounded) {
-
             velocityX *= GROUND_FRICTION;
-
         } else {
-
             velocityX *= AIR_FRICTION;
         }
     }
@@ -178,11 +350,7 @@ const updateHorizontalMovement = () => {
     playerX += velocityX;
 
 
-    // Limites da fase
-
-    const boardWidth =
-        gameBoard.clientWidth;
-
+    // Limites do mundo
 
     if (playerX < 0) {
 
@@ -191,10 +359,14 @@ const updateHorizontalMovement = () => {
     }
 
 
-    if (playerX + PLAYER_WIDTH > boardWidth) {
+    if (
+        playerX + PLAYER_WIDTH >
+        WORLD_WIDTH
+    ) {
 
         playerX =
-            boardWidth - PLAYER_WIDTH;
+            WORLD_WIDTH -
+            PLAYER_WIDTH;
 
         velocityX = 0;
     }
@@ -214,8 +386,6 @@ const updateVerticalMovement = () => {
 
     playerY += velocityY;
 
-
-    // chão
 
     if (playerY <= 0) {
 
@@ -241,7 +411,10 @@ const updateCrouch = () => {
     if (!gameRunning) return;
 
 
-    if (keys.down && isGrounded) {
+    if (
+        keys.down &&
+        isGrounded
+    ) {
 
         if (!isCrouching) {
 
@@ -251,17 +424,7 @@ const updateCrouch = () => {
                 'crouching'
             );
 
-            /*
-                Frame 10:
-                coluna 2 / linha 3
-
-                É o frame de interação
-                da sua sprite atual.
-
-                Depois substituímos por um
-                frame realmente agachado.
-            */
-
+            // Frame 10 da sprite atual
             setFrame(1, 2);
         }
 
@@ -282,447 +445,110 @@ const updateCrouch = () => {
 
 
 // ======================================================
-// POSIÇÃO VISUAL
+// CÂMERA
 // ======================================================
 
-const updatePlayerPosition = () => {
+const updateCamera = () => {
 
-    player.style.left =
-        `${playerX}px`;
-
-    player.style.bottom =
-        `${playerY}px`;
-};
+    if (!gameRunning) return;
 
 
-// ======================================================
-// OBSTÁCULOS
-// ======================================================
+    /*
+        A câmera tenta manter o personagem
+        aproximadamente 300px à esquerda
+        do centro da tela.
+    */
 
-let obstacles = [];
-
-let obstacleTimer = 0;
-
-let difficulty = 1;
-
-
-// ======================================================
-// PADRÕES DE OBSTÁCULOS
-// ======================================================
-
-const patterns = [
-
-    // ------------------------------------
-    // PADRÃO 1
-    // simples
-    // ------------------------------------
-
-    [
-        {
-            type: 'high',
-            delay: 0
-        }
-    ],
+    const targetCameraX =
+        playerX -
+        CAMERA_OFFSET;
 
 
-    // ------------------------------------
-    // PADRÃO 2
-    // baixo
-    // ------------------------------------
-
-    [
-        {
-            type: 'low',
-            delay: 0
-        }
-    ],
+    cameraX +=
+        (
+            targetCameraX -
+            cameraX
+        ) *
+        CAMERA_SMOOTHING;
 
 
-    // ------------------------------------
-    // PADRÃO 3
-    // salto + salto
-    // ------------------------------------
+    // Não mostrar fora do começo do mundo
 
-    [
-        {
-            type: 'high',
-            delay: 0
-        },
-        {
-            type: 'high',
-            delay: 420
-        }
-    ],
+    if (cameraX < 0) {
+        cameraX = 0;
+    }
 
 
-    // ------------------------------------
-    // PADRÃO 4
-    // baixo + alto
-    // ------------------------------------
+    // Não mostrar além do final
 
-    [
-        {
-            type: 'low',
-            delay: 0
-        },
-        {
-            type: 'high',
-            delay: 600
-        }
-    ],
-
-
-    // ------------------------------------
-    // PADRÃO 5
-    // alto + baixo
-    // ------------------------------------
-
-    [
-        {
-            type: 'high',
-            delay: 0
-        },
-        {
-            type: 'low',
-            delay: 650
-        }
-    ],
-
-
-    // ------------------------------------
-    // PADRÃO 6
-    // sequência
-    // ------------------------------------
-
-    [
-        {
-            type: 'high',
-            delay: 0
-        },
-        {
-            type: 'low',
-            delay: 500
-        },
-        {
-            type: 'high',
-            delay: 1050
-        }
-    ],
-
-
-    // ------------------------------------
-    // PADRÃO 7
-    // longo
-    // ------------------------------------
-
-    [
-        {
-            type: 'long',
-            delay: 0
-        }
-    ]
-];
-
-
-// ======================================================
-// CRIAR OBSTÁCULO
-// ======================================================
-
-const createObstacle = (type) => {
-
-    const obstacle =
-        document.createElement('div');
-
-    obstacle.classList.add(
-        'obstacle',
-        type
-    );
-
-
-    const boardWidth =
+    const visibleWidth =
         gameBoard.clientWidth;
 
 
-    const data = {
+    const maxCameraX =
+        WORLD_WIDTH -
+        visibleWidth;
 
-        x: boardWidth + 80,
 
-        type: type,
-
-        width:
-            type === 'low'
-                ? 110
-                : type === 'high'
-                    ? 65
-                    : type === 'long'
-                        ? 150
-                        : 60,
-
-        height:
-            type === 'low'
-                ? 58
-                : type === 'high'
-                    ? 105
-                    : type === 'long'
-                        ? 48
-                        : 80
-    };
-
-
-    obstacle.style.left =
-        `${data.x}px`;
-
-    obstacle.style.right =
-        'auto';
-
-
-    gameBoard.appendChild(
-        obstacle
-    );
-
-
-    obstacles.push({
-
-        element: obstacle,
-
-        x: data.x,
-
-        width: data.width,
-
-        height: data.height,
-
-        type: data.type
-    });
-};
-
-
-// ======================================================
-// SPAWN DE PADRÃO
-// ======================================================
-
-const spawnPattern = () => {
-
-    if (!gameRunning) return;
-
-
-    /*
-        Conforme o jogador sobrevive,
-        a dificuldade aumenta.
-    */
-
-    difficulty =
-        Math.min(
-            3,
-            1 +
-            Math.floor(
-                survivalTime / 15000
-            )
-        );
-
-
-    let availablePatterns;
-
-
-    if (difficulty === 1) {
-
-        availablePatterns =
-            patterns.slice(0, 2);
-
-    } else if (difficulty === 2) {
-
-        availablePatterns =
-            patterns.slice(0, 5);
-
-    } else {
-
-        availablePatterns =
-            patterns;
-    }
-
-
-    const pattern =
-        availablePatterns[
-            Math.floor(
-                Math.random() *
-                availablePatterns.length
-            )
-        ];
-
-
-    pattern.forEach((item) => {
-
-        setTimeout(() => {
-
-            if (!gameRunning) return;
-
-            createObstacle(
-                item.type
-            );
-
-        }, item.delay);
-    });
-
-
-    /*
-        Espaço entre padrões.
-    */
-
-    obstacleTimer =
-        Math.max(
-            1500,
-            2600 -
-            difficulty * 250
-        );
-};
-
-
-// ======================================================
-// MOVIMENTO DOS OBSTÁCULOS
-// ======================================================
-
-const updateObstacles = (deltaTime) => {
-
-    if (!gameRunning) return;
-
-
-    /*
-        A velocidade aumenta lentamente
-        conforme a dificuldade.
-    */
-
-    const obstacleSpeed =
-        5.5 +
-        difficulty * 0.8;
-
-
-    obstacles.forEach((obstacle) => {
-
-        obstacle.x -=
-            obstacleSpeed *
-            deltaTime;
-
-
-        obstacle.element.style.left =
-            `${obstacle.x}px`;
-    });
-
-
-    /*
-        Remove obstáculos que saíram
-        da tela.
-    */
-
-    obstacles =
-        obstacles.filter((obstacle) => {
-
-            if (
-                obstacle.x +
-                obstacle.width <
-                -100
-            ) {
-
-                obstacle.element.remove();
-
-                return false;
-            }
-
-            return true;
-        });
-};
-
-
-// ======================================================
-// COLISÃO AABB
-// ======================================================
-
-const rectanglesCollide = (
-    a,
-    b
-) => {
-
-    return (
-
-        a.x <
-        b.x + b.width &&
-
-        a.x + a.width >
-        b.x &&
-
-        a.y <
-        b.y + b.height &&
-
-        a.y + a.height >
-        b.y
-    );
-};
-
-
-// ======================================================
-// DETECTAR COLISÃO
-// ======================================================
-
-const checkObstacleCollisions = () => {
-
-    if (!gameRunning) return;
-
-
-    const playerBox =
-        getPlayerHitbox();
-
-
-    for (
-        const obstacle
-        of obstacles
+    if (
+        cameraX >
+        maxCameraX
     ) {
 
-        const obstacleBox = {
-
-            x: obstacle.x,
-
-            y: 0,
-
-            width:
-                obstacle.width,
-
-            height:
-                obstacle.height
-        };
-
-
-        if (
-            rectanglesCollide(
-                playerBox,
-                obstacleBox
-            )
-        ) {
-
-            gameOver();
-
-            return;
-        }
+        cameraX =
+            maxCameraX;
     }
+
+
+    /*
+        O personagem é desenhado
+        na posição relativa à câmera.
+    */
+
+    const screenX =
+        playerX -
+        cameraX;
+
+
+    player.style.left =
+        `${screenX}px`;
+
+
+    player.style.bottom =
+        `${playerY}px`;
+
+
+    /*
+        Os obstáculos também pertencem
+        ao mundo, então precisam acompanhar
+        a câmera.
+    */
+
+    obstacleElements.forEach(
+        (object) => {
+
+            const screenObjectX =
+                object.data.x -
+                cameraX;
+
+
+            object.element.style.left =
+                `${screenObjectX}px`;
+        }
+    );
 };
-
-
-// ======================================================
-// TEMPO DE SOBREVIVÊNCIA
-// ======================================================
-
-let survivalTime = 0;
 
 
 // ======================================================
 // ANIMAÇÃO DO PERSONAGEM
 // ======================================================
 
-let walkTimer = 0;
-
 const updatePlayerAnimation = () => {
 
     if (!gameRunning) return;
 
 
-    // agachado
+    // AGACHADO
 
     if (isCrouching) {
 
@@ -732,14 +558,13 @@ const updatePlayerAnimation = () => {
     }
 
 
-    // no ar
+    // NO AR
 
     if (!isGrounded) {
 
         if (velocityY > 5) {
 
             // início do salto
-
             setFrame(0, 1);
 
         } else if (
@@ -747,13 +572,11 @@ const updatePlayerAnimation = () => {
         ) {
 
             // topo
-
             setFrame(1, 1);
 
         } else {
 
             // queda
-
             setFrame(2, 1);
         }
 
@@ -761,11 +584,11 @@ const updatePlayerAnimation = () => {
     }
 
 
-    // andando
+    // ANDANDO
 
     if (
-        Math.abs(velocityX)
-        > 0.5
+        Math.abs(velocityX) >
+        0.5
     ) {
 
         walkTimer++;
@@ -802,6 +625,75 @@ const updatePlayerAnimation = () => {
 
 
 // ======================================================
+// COLISÃO
+// ======================================================
+
+const rectanglesCollide = (
+    a,
+    b
+) => {
+
+    return (
+
+        a.x <
+        b.x + b.width &&
+
+        a.x + a.width >
+        b.x &&
+
+        a.y <
+        b.y + b.height &&
+
+        a.y + a.height >
+        b.y
+    );
+};
+
+
+const checkCollisions = () => {
+
+    if (!gameRunning) return;
+
+
+    const playerBox =
+        getPlayerHitbox();
+
+
+    for (
+        const object
+        of obstacleElements
+    ) {
+
+        const obstacleBox = {
+
+            x: object.data.x,
+
+            y: 0,
+
+            width:
+                object.data.width,
+
+            height:
+                object.data.height
+        };
+
+
+        if (
+            rectanglesCollide(
+                playerBox,
+                obstacleBox
+            )
+        ) {
+
+            gameOver();
+
+            return;
+        }
+    }
+};
+
+
+// ======================================================
 // GAME OVER
 // ======================================================
 
@@ -817,10 +709,7 @@ const gameOver = () => {
     velocityY = 0;
 
 
-    /*
-        Frame 12 =
-        coluna 4 / linha 3
-    */
+    // Frame 12 = derrotado
 
     setFrame(3, 2);
 
@@ -840,7 +729,6 @@ const restart = () => {
 
 
     isGrounded = true;
-
     isCrouching = false;
 
 
@@ -848,16 +736,11 @@ const restart = () => {
     velocityY = 0;
 
 
-    playerX = 100;
+    playerX = 200;
     playerY = 0;
 
 
-    survivalTime = 0;
-
-    difficulty = 1;
-
-
-    obstacleTimer = 1000;
+    cameraX = 0;
 
 
     keys.left = false;
@@ -865,47 +748,28 @@ const restart = () => {
     keys.down = false;
 
 
+    currentFrame = 0;
+    walkTimer = 0;
+
+
     player.classList.remove(
         'crouching'
     );
 
 
-    player.style.transform =
-        '';
-
-
-    player.style.left =
-        `${playerX}px`;
-
-
-    player.style.bottom =
-        `${playerY}px`;
-
-
     setFrame(0, 0);
-
-
-    /*
-        Limpa todos os obstáculos.
-    */
-
-    obstacles.forEach(
-        (obstacle) => {
-            obstacle.element.remove();
-        }
-    );
-
-
-    obstacles = [];
 
 
     gameOverScreen.style.visibility =
         'hidden';
+
+
+    updateCamera();
 };
 
 
 // ======================================================
-// TECLAS PRESSIONADAS
+// CONTROLES
 // ======================================================
 
 document.addEventListener(
@@ -1051,17 +915,10 @@ const gameLoop = (
         currentTime;
 
 
-    const deltaTime =
-        delta / 16.67;
-
-
     if (gameRunning) {
 
-        survivalTime += delta;
-
-
         /*
-            Controle do jogador
+            Movimento do personagem
         */
 
         updateCrouch();
@@ -1070,41 +927,26 @@ const gameLoop = (
 
         updateVerticalMovement();
 
-        updatePlayerPosition();
-
 
         /*
-            Obstáculos
+            Câmera
         */
 
-        obstacleTimer -= delta;
-
-
-        if (
-            obstacleTimer <= 0
-        ) {
-
-            spawnPattern();
-        }
-
-
-        updateObstacles(
-            deltaTime
-        );
-
-
-        /*
-            Animação
-        */
-
-        updatePlayerAnimation();
+        updateCamera();
 
 
         /*
             Colisão
         */
 
-        checkObstacleCollisions();
+        checkCollisions();
+
+
+        /*
+            Sprite
+        */
+
+        updatePlayerAnimation();
     }
 
 
@@ -1118,9 +960,11 @@ const gameLoop = (
 // INICIALIZAÇÃO
 // ======================================================
 
+createLevelObjects();
+
 setFrame(0, 0);
 
-obstacleTimer = 1000;
+updateCamera();
 
 requestAnimationFrame(
     gameLoop
