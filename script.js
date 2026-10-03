@@ -1,570 +1,1077 @@
-// ======================================================
-// AMAZON QUEST: ORIGEM
-// SCRIPT.JS
-// ======================================================
+const $ = (selector) => document.querySelector(selector);
 
+const screens = [
+    '#main-menu',
+    '#how-to-play',
+    '#settings',
+    '#credits',
+    '#map-screen',
+    '#gate-transition',
+    '#reward-screen',
+    '#game-screen'
+];
 
-// ======================================================
-// TELAS DO JOGO
-// ======================================================
+const world = $('#world');
+const player = $('#player');
 
-const mainMenu = document.querySelector('#main-menu');
-const howToPlayScreen = document.querySelector('#how-to-play');
-const creditsScreen = document.querySelector('#credits');
-const mapScreen = document.querySelector('#map-screen');
-const gameScreen = document.querySelector('#game-screen');
 
+// =====================================================
+// CARTAS — SISTEMA ROGUELIKE
+// =====================================================
 
-// ======================================================
-// BOTÕES DO MENU
-// ======================================================
+const cards = [
 
-const playButton =
-    document.querySelector('#play-button');
-
-const howToPlayButton =
-    document.querySelector('#how-to-play-button');
-
-const creditsButton =
-    document.querySelector('#credits-button');
-
-const backFromHow =
-    document.querySelector('#back-from-how');
-
-const backFromCredits =
-    document.querySelector('#back-from-credits');
-
-const mapBack =
-    document.querySelector('#map-back');
-
-const secretariaButton =
-    document.querySelector('#secretaria-button');
-
-const gameMenuButton =
-    document.querySelector('#game-menu-button');
-
-
-// ======================================================
-// ELEMENTOS DO GAMEPLAY
-// ======================================================
-
-const player =
-    document.querySelector('.player');
-
-const gameBoard =
-    document.querySelector('.game-board');
-
-const gameOverScreen =
-    document.querySelector('.game-over');
-
-const restartButton =
-    document.querySelector('.restart');
-
-
-// ======================================================
-// CONFIGURAÇÕES DO MUNDO
-// ======================================================
-
-const WORLD_WIDTH = 6000;
-
-const PLAYER_WIDTH = 128;
-const PLAYER_HEIGHT = 128;
-
-
-// ======================================================
-// FÍSICA
-// ======================================================
-
-const GRAVITY = 0.82;
-const JUMP_FORCE = 16;
-
-const MAX_SPEED = 7;
-const ACCELERATION = 0.7;
-
-const AIR_CONTROL = 0.45;
-
-const GROUND_FRICTION = 0.78;
-const AIR_FRICTION = 0.97;
-
-
-// ======================================================
-// ESTADO DO JOGO
-// ======================================================
-
-let gameRunning = false;
-
-let isGrounded = true;
-let isCrouching = false;
-
-let velocityX = 0;
-let velocityY = 0;
-
-
-// ======================================================
-// POSIÇÃO DO JOGADOR NO MUNDO
-// ======================================================
-
-let playerX = 200;
-let playerY = 0;
-
-
-// ======================================================
-// CÂMERA
-// ======================================================
-
-let cameraX = 0;
-
-const CAMERA_OFFSET = 300;
-const CAMERA_SMOOTHING = 0.12;
-
-
-// ======================================================
-// CONTROLES
-// ======================================================
-
-const keys = {
-    left: false,
-    right: false,
-    down: false
-};
-
-
-// ======================================================
-// SPRITE
-// ======================================================
-
-let currentFrame = 0;
-let walkTimer = 0;
-
-
-const setFrame = (
-    column,
-    row
-) => {
-
-    player.style.backgroundPosition =
-        `-${column * 128}px -${row * 128}px`;
-};
-
-
-// ======================================================
-// HITBOX
-// ======================================================
-
-const getPlayerHitbox = () => {
-
-    if (isCrouching) {
-
-        return {
-
-            x: playerX + 24,
-
-            y: playerY + 4,
-
-            width: 80,
-
-            height: 62
-        };
-    }
-
-
-    return {
-
-        x: playerX + 27,
-
-        y: playerY + 8,
-
-        width: 74,
-
-        height: 108
-    };
-};
-
-
-// ======================================================
-// OBJETOS DA FASE
-// ======================================================
-
-const levelObjects = [
-
+    // COMUNS
     {
-        x: 700,
-        width: 70,
-        height: 100,
-        type: 'high'
+        name: 'Carteirinha de Estudante',
+        text: '+15% de velocidade.',
+        icon: '➜',
+        tier: 'common',
+        type: 'buff',
+        speed: 0.15
     },
 
     {
-        x: 1100,
-        width: 120,
-        height: 55,
-        type: 'low'
+        name: 'Tênis de Educação Física',
+        text: '+20% de força no pulo.',
+        icon: '↟',
+        tier: 'common',
+        type: 'buff',
+        jump: 3
     },
 
     {
-        x: 1550,
-        width: 70,
-        height: 110,
-        type: 'high'
+        name: 'Lanche Reforçado',
+        text: '+1 coração.',
+        icon: '♥',
+        tier: 'common',
+        type: 'buff',
+        shield: 1
     },
 
     {
-        x: 1900,
-        width: 70,
-        height: 95,
-        type: 'high'
+        name: 'Mesada',
+        text: '+30% de sementes coletadas.',
+        icon: '✦',
+        tier: 'common',
+        type: 'buff',
+        seedMultiplier: 1.3
     },
 
     {
-        x: 2200,
-        width: 120,
-        height: 55,
-        type: 'low'
+        name: 'Caderno Completo',
+        text: '+25% de experiência.',
+        icon: '▤',
+        tier: 'common',
+        type: 'buff',
+        xpMultiplier: 1.25
     },
 
     {
-        x: 2700,
-        width: 160,
-        height: 48,
-        type: 'long'
+        name: 'Mochila Resistente',
+        text: 'Reduz o dano recebido.',
+        icon: '▣',
+        tier: 'common',
+        type: 'buff',
+        shield: 1
     },
 
     {
-        x: 3150,
-        width: 70,
-        height: 105,
-        type: 'high'
+        name: 'Dia de Sorte',
+        text: 'Maior chance de encontrar bônus.',
+        icon: '★',
+        tier: 'common',
+        type: 'buff',
+        luck: 0.2
     },
 
     {
-        x: 3450,
-        width: 120,
-        height: 55,
-        type: 'low'
+        name: 'Caneta Azul',
+        text: '+15% de precisão nos disparos.',
+        icon: '➹',
+        tier: 'common',
+        type: 'buff',
+        shotSpeed: 1.5
     },
 
     {
-        x: 3800,
-        width: 70,
-        height: 115,
-        type: 'high'
+        name: 'Recreio',
+        text: 'Recupera energia em checkpoints.',
+        icon: '☀',
+        tier: 'common',
+        type: 'buff',
+        heal: 1
     },
 
     {
-        x: 4300,
-        width: 150,
-        height: 50,
-        type: 'long'
+        name: 'Estojo Completo',
+        text: '+2 espaços de inventário.',
+        icon: '▭',
+        tier: 'common',
+        type: 'buff',
+        inventory: 2
+    },
+
+
+    // DEBUFFS
+    {
+        name: 'Atraso na Entrada',
+        text: '-15% de velocidade.',
+        icon: '◌',
+        tier: 'common',
+        type: 'debuff',
+        speed: -0.15
     },
 
     {
-        x: 4700,
-        width: 70,
-        height: 115,
-        type: 'high'
+        name: 'Sono na Aula',
+        text: '-20% de força no pulo.',
+        icon: 'Z',
+        tier: 'common',
+        type: 'debuff',
+        jump: -3
+    },
+
+    {
+        name: 'Prova Surpresa',
+        text: 'Menor chance de encontrar bônus.',
+        icon: '!',
+        tier: 'common',
+        type: 'debuff',
+        luck: -0.25
+    },
+
+    {
+        name: 'Mochila Pesada',
+        text: 'Você recebe mais dano.',
+        icon: '⬇',
+        tier: 'common',
+        type: 'debuff',
+        damage: 0.2
+    },
+
+    {
+        name: 'Esqueci o Trabalho',
+        text: 'Menos sementes e inimigos mais rápidos.',
+        icon: '✕',
+        tier: 'common',
+        type: 'debuff',
+        speed: -0.1,
+        seedMultiplier: 0.5,
+        enemySpeed: 0.2
+    },
+
+
+    // SUPER RAROS
+    {
+        name: 'Aluno Destaque',
+        text: '+30% velocidade, +20% pulo e +1 coração.',
+        icon: '🏆',
+        tier: 'rare',
+        type: 'rare',
+        speed: 0.3,
+        jump: 3,
+        shield: 1
+    },
+
+    {
+        name: 'Dia dos Prêmios',
+        text: 'Recupere energia após derrotar inimigos.',
+        icon: '🎁',
+        tier: 'rare',
+        type: 'rare',
+        healOnEnemy: true
+    },
+
+    {
+        name: 'Passe Livre da Escola',
+        text: 'Revela segredos e caminhos especiais.',
+        icon: '🔑',
+        tier: 'rare',
+        type: 'rare',
+        reveal: true
+    },
+
+
+    // LENDÁRIAS
+    {
+        name: 'Aluno Nota 10',
+        text: '+50% velocidade, +50% pulo, +2 corações e resistência.',
+        icon: '♛',
+        tier: 'legendary',
+        type: 'legendary',
+        speed: 0.5,
+        jump: 7,
+        shield: 2,
+        damageReduction: 0.3
+    },
+
+    {
+        name: 'Formatura',
+        text: 'Dobra sementes e XP e sobrevive a um dano fatal.',
+        icon: '♕',
+        tier: 'legendary',
+        type: 'legendary',
+        speed: 0.1,
+        shield: 3,
+        seedMultiplier: 2,
+        xpMultiplier: 2,
+        revive: true
     }
 
 ];
 
 
-// ======================================================
-// ELEMENTOS DOS OBSTÁCULOS
-// ======================================================
+// =====================================================
+// ESTADO DO JOGO
+// =====================================================
 
-const obstacleElements = [];
+let gameRunning = false;
+let animationId;
 
+let playerX = 110;
+let playerY = 0;
 
-// ======================================================
-// CRIAR OBJETOS DA FASE
-// ======================================================
+let velocityX = 0;
+let velocityY = 0;
 
-const createLevelObjects = () => {
+let score = 0;
+let shots = 0;
 
-    levelObjects.forEach(
-        (object) => {
+let objects = [];
+let projectiles = [];
 
-            const element =
-                document.createElement('div');
-
-
-            element.classList.add(
-                'obstacle',
-                object.type
-            );
-
-
-            element.style.position =
-                'absolute';
+let keys = {
+    left: false,
+    right: false
+};
 
 
-            element.style.left =
-                `${object.x}px`;
+// =====================================================
+// PODER ATIVO
+// =====================================================
+
+let activeCard = null;
+
+let rerolls = 1;
+
+let jumpForce = 16;
+let speedFactor = 1;
+
+let shield = 0;
+
+let shotCost = 0;
+let shotSpeed = 10;
+
+let pierce = false;
+
+let seedMultiplier = 1;
+let xpMultiplier = 1;
+
+let enemySpeed = 0;
+let canReveal = false;
+let canRevive = false;
 
 
-            element.style.bottom =
-                '0px';
+// =====================================================
+// FÍSICA
+// =====================================================
+
+const GRAVITY = 0.78;
+
+const PLAYER_W = 75;
+
+const GROUND = 11.5;
 
 
-            element.style.width =
-                `${object.width}px`;
+// =====================================================
+// SISTEMA DE TELAS
+// =====================================================
 
+function show(id) {
 
-            element.style.height =
-                `${object.height}px`;
+    screens.forEach((screen) => {
 
+        const element = $(screen);
 
-            element.style.animation =
-                'none';
-
-
-            gameBoard.appendChild(
-                element
-            );
-
-
-            obstacleElements.push({
-
-                data: object,
-
-                element: element
-
-            });
-
+        if (element) {
+            element.classList.remove('is-active');
         }
+
+    });
+
+    const target = $(id);
+
+    if (target) {
+        target.classList.add('is-active');
+    }
+
+}
+
+
+// =====================================================
+// MENU
+// =====================================================
+
+function showMenu() {
+
+    stopGame();
+
+    show('#main-menu');
+
+}
+
+
+// =====================================================
+// BOTÕES QUE FECHAM JANELAS
+// =====================================================
+
+document
+    .querySelectorAll('[data-close]')
+    .forEach((button) => {
+
+        button.addEventListener('click', () => {
+
+            showMenu();
+
+        });
+
+    });
+
+
+// =====================================================
+// BOTÕES DO MENU
+// =====================================================
+
+$('#play-button').addEventListener(
+    'click',
+    () => show('#map-screen')
+);
+
+$('#how-to-play-button').addEventListener(
+    'click',
+    () => show('#how-to-play')
+);
+
+$('#settings-button').addEventListener(
+    'click',
+    () => show('#settings')
+);
+
+$('#credits-button').addEventListener(
+    'click',
+    () => show('#credits')
+);
+
+$('#map-back').addEventListener(
+    'click',
+    showMenu
+);
+
+
+// =====================================================
+// CONFIGURAÇÕES
+// =====================================================
+
+$('#motion-toggle').addEventListener(
+    'change',
+    (event) => {
+
+        document.body.classList.toggle(
+            'motion-reduced',
+            event.target.checked
+        );
+
+    }
+);
+
+
+// =====================================================
+// ENTRAR NA SECRETARIA
+// =====================================================
+
+$('#school-location').addEventListener(
+    'click',
+    startTransition
+);
+
+
+// =====================================================
+// TRANSIÇÃO DO PORTÃO
+// =====================================================
+
+function startTransition() {
+
+    show('#gate-transition');
+
+    requestAnimationFrame(() => {
+
+        $('#gate-transition').classList.add('open');
+
+    });
+
+    setTimeout(() => {
+
+        $('#gate-transition').classList.remove('open');
+
+        openCardDraft();
+
+    }, 2400);
+
+}
+
+
+// =====================================================
+// SORTEIO DAS CARTAS
+// =====================================================
+
+function drawCards() {
+
+    return [...cards]
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3);
+
+}
+
+
+// =====================================================
+// MOSTRAR CARTAS
+// =====================================================
+
+function renderDraft() {
+
+    const holder = $('#reward-cards');
+
+    holder.innerHTML = '';
+
+
+    drawCards().forEach((card, index) => {
+
+        const button =
+            document.createElement('button');
+
+        button.className =
+            `reward-card ${card.tier} ${card.type}`;
+
+        button.style.animationDelay =
+            `${index * 90}ms`;
+
+
+        let rarityLabel = 'BENÇÃO';
+
+        if (card.tier === 'legendary') {
+            rarityLabel = 'LENDÁRIA';
+        }
+
+        else if (card.tier === 'rare') {
+            rarityLabel = 'RARA';
+        }
+
+        else if (card.type === 'debuff') {
+            rarityLabel = 'DESAFIO';
+        }
+
+
+        button.innerHTML = `
+
+            <span>
+                ${card.icon}
+            </span>
+
+            <em>
+                ${rarityLabel}
+            </em>
+
+            <b>
+                ${card.name}
+            </b>
+
+            <small>
+                ${card.text}
+            </small>
+
+        `;
+
+
+        button.addEventListener(
+            'click',
+            () => chooseCard(card, button)
+        );
+
+
+        holder.append(button);
+
+    });
+
+
+    $('#reroll-count').textContent =
+        rerolls;
+
+
+    $('#reroll-button').disabled =
+        rerolls === 0;
+
+}
+
+
+// =====================================================
+// ABRIR BARALHO
+// =====================================================
+
+function openCardDraft() {
+
+    rerolls = 1;
+
+    renderDraft();
+
+    show('#reward-screen');
+
+}
+
+
+// =====================================================
+// ESCOLHER CARTA
+// =====================================================
+
+function chooseCard(card, button) {
+
+    document
+        .querySelectorAll('.reward-card')
+        .forEach((item) => {
+
+            item.disabled = true;
+
+        });
+
+
+    button.classList.add('is-picked');
+
+    activeCard = card;
+
+
+    $('#activation-symbol').textContent =
+        card.icon;
+
+    $('#activation-name').textContent =
+        card.name.toUpperCase();
+
+    $('#activation-description').textContent =
+        card.text;
+
+
+    setTimeout(
+        startGame,
+        650
     );
-};
+
+}
 
 
-// ======================================================
-// ABRIR TELAS
-// ======================================================
+// =====================================================
+// NOVAS CARTAS
+// =====================================================
 
-const hideAllScreens = () => {
+$('#reroll-button').addEventListener(
+    'click',
+    () => {
 
-    mainMenu.style.display = 'none';
+        if (!rerolls) {
+            return;
+        }
 
-    howToPlayScreen.style.display = 'none';
+        rerolls--;
 
-    creditsScreen.style.display = 'none';
+        renderDraft();
 
-    mapScreen.style.display = 'none';
-
-    gameScreen.style.display = 'none';
-
-};
-
-
-// ======================================================
-// MENU PRINCIPAL
-// ======================================================
-
-const showMainMenu = () => {
-
-    gameRunning = false;
-
-    hideAllScreens();
-
-    mainMenu.style.display = 'flex';
-
-    gameOverScreen.style.visibility =
-        'hidden';
-
-};
+    }
+);
 
 
-// ======================================================
-// COMO JOGAR
-// ======================================================
+// =====================================================
+// CRIAR OBJETOS
+// =====================================================
 
-const showHowToPlay = () => {
+function createObject(
+    kind,
+    x,
+    y = 0
+) {
 
-    gameRunning = false;
-
-    hideAllScreens();
-
-    howToPlayScreen.style.display =
-        'flex';
-};
-
-
-// ======================================================
-// CRÉDITOS
-// ======================================================
-
-const showCredits = () => {
-
-    gameRunning = false;
-
-    hideAllScreens();
-
-    creditsScreen.style.display =
-        'flex';
-};
+    const element =
+        document.createElement('div');
 
 
-// ======================================================
-// MAPA
-// ======================================================
-
-const showMap = () => {
-
-    gameRunning = false;
-
-    hideAllScreens();
-
-    mapScreen.style.display =
-        'block';
-};
+    element.className =
+        kind;
 
 
-// ======================================================
-// INICIAR FASE
-// ======================================================
+    element.style.left =
+        `${x}px`;
 
-const startGame = () => {
 
-    hideAllScreens();
+    element.style.bottom =
+        `calc(${GROUND}% + ${y}px)`;
 
-    gameScreen.style.display =
-        'block';
 
-    resetGame();
+    world.append(element);
+
+
+    return {
+
+        el: element,
+
+        x,
+
+        y,
+
+        kind,
+
+        collected: false,
+
+        w: 30,
+
+        h: 30
+
+    };
+
+}
+
+
+// =====================================================
+// CONSTRUIR FASE
+// =====================================================
+
+function buildLevel() {
+
+    [
+        ...objects,
+        ...projectiles
+    ]
+        .forEach((object) => {
+
+            if (object.el) {
+                object.el.remove();
+            }
+
+        });
+
+
+    objects = [];
+
+    projectiles = [];
+
+
+    // OBSTÁCULOS
+
+    [
+
+        [500, 70, 86],
+
+        [860, 90, 110],
+
+        [1260, 65, 95],
+
+        [1640, 105, 75],
+
+        [2020, 72, 115],
+
+        [2380, 112, 90]
+
+    ]
+        .forEach(
+            ([x, width, height]) => {
+
+                const item =
+                    createObject(
+                        'obstacle',
+                        x
+                    );
+
+
+                item.w = width;
+
+                item.h = height;
+
+
+                item.el.style.width =
+                    `${width}px`;
+
+                item.el.style.height =
+                    `${height}px`;
+
+
+                objects.push(item);
+
+            }
+        );
+
+
+    // SEMENTES
+
+    [
+
+        350,
+
+        680,
+
+        780,
+
+        1100,
+
+        1420,
+
+        1510,
+
+        1840,
+
+        2200
+
+    ]
+        .forEach(
+            (x, index) => {
+
+                const item =
+                    createObject(
+                        'seed',
+                        x,
+                        index % 3 === 0
+                            ? 62
+                            : 20
+                    );
+
+
+                item.w = 22;
+
+                item.h = 22;
+
+
+                objects.push(item);
+
+            }
+        );
+
+}
+
+
+// =====================================================
+// APLICAR CARTA
+// =====================================================
+
+function applyCard() {
+
+    jumpForce =
+        16 + (activeCard.jump || 0);
+
+
+    speedFactor =
+        1 + (activeCard.speed || 0);
+
+
+    shield =
+        activeCard.shield || 0;
+
+
+    shotCost =
+        activeCard.shotCost || 0;
+
+
+    shotSpeed =
+        10 + (activeCard.shotSpeed || 0);
+
+
+    pierce =
+        Boolean(activeCard.pierce);
+
+
+    seedMultiplier =
+        activeCard.seedMultiplier || 1;
+
+
+    xpMultiplier =
+        activeCard.xpMultiplier || 1;
+
+
+    enemySpeed =
+        activeCard.enemySpeed || 0;
+
+
+    canReveal =
+        Boolean(activeCard.reveal);
+
+
+    canRevive =
+        Boolean(activeCard.revive);
+
+
+    score =
+        Math.max(
+            0,
+            activeCard.seeds || 0
+        );
+
+
+    document.body.classList.toggle(
+        'foggy',
+        Boolean(activeCard.fog)
+    );
+
+}
+
+
+// =====================================================
+// INICIAR JOGO
+// =====================================================
+
+function startGame() {
+
+    show('#game-screen');
+
+
+    $('#power-activation')
+        .classList.add('show');
+
+
+    $('#game-over')
+        .classList.remove('show');
+
+
+    $('#level-complete')
+        .classList.remove('show');
+
+
+    playerX = 110;
+
+    playerY = 0;
+
+
+    velocityX = 0;
+
+    velocityY = 0;
+
+
+    shots = 0;
+
+
+    keys.left = false;
+
+    keys.right = false;
+
+
+    applyCard();
+
+    buildLevel();
+
+
+    $('#hud-power').textContent =
+        activeCard.name.toUpperCase();
+
+
+    $('#hud-score').textContent =
+        `✦ ${String(score).padStart(3, '0')}`;
+
+
+    $('#hud-shots').textContent =
+        '➹ 0';
+
 
     gameRunning = true;
 
-    updateCamera();
 
-};
+    cancelAnimationFrame(
+        animationId
+    );
 
 
-// ======================================================
+    loop();
+
+
+    setTimeout(() => {
+
+        $('#power-activation')
+            .classList.remove('show');
+
+    }, 1350);
+
+}
+
+
+// =====================================================
+// PARAR JOGO
+// =====================================================
+
+function stopGame() {
+
+    gameRunning = false;
+
+
+    cancelAnimationFrame(
+        animationId
+    );
+
+
+    document.body.classList.remove(
+        'foggy'
+    );
+
+}
+
+
+// =====================================================
 // PULO
-// ======================================================
+// =====================================================
 
-const jump = () => {
+function jump() {
 
-    if (!gameRunning) return;
+    if (!gameRunning) {
+        return;
+    }
 
-    if (!isGrounded) return;
 
-    if (isCrouching) return;
+    if (playerY >= 1) {
+        return;
+    }
 
 
     velocityY =
-        JUMP_FORCE;
+        jumpForce;
+
+}
 
 
-    isGrounded = false;
+// =====================================================
+// DISPARO
+// =====================================================
 
-};
+function shoot() {
 
-
-// ======================================================
-// MOVIMENTO HORIZONTAL
-// ======================================================
-
-const updateHorizontalMovement = () => {
-
-    if (!gameRunning) return;
-
-
-    const control =
-        isGrounded
-            ? ACCELERATION
-            : ACCELERATION * AIR_CONTROL;
-
-
-    if (keys.left) {
-
-        velocityX -= control;
-
-    }
-
-
-    if (keys.right) {
-
-        velocityX += control;
-
-    }
-
-
-    if (velocityX > MAX_SPEED) {
-
-        velocityX =
-            MAX_SPEED;
-
-    }
-
-
-    if (velocityX < -MAX_SPEED) {
-
-        velocityX =
-            -MAX_SPEED;
-
+    if (!gameRunning) {
+        return;
     }
 
 
     if (
-        !keys.left &&
-        !keys.right
+        shotCost &&
+        score < shotCost
     ) {
-
-        if (isGrounded) {
-
-            velocityX *=
-                GROUND_FRICTION;
-
-        } else {
-
-            velocityX *=
-                AIR_FRICTION;
-
-        }
-
+        return;
     }
 
 
-    playerX += velocityX;
-
-
-    if (playerX < 0) {
-
-        playerX = 0;
-
-        velocityX = 0;
-
+    if (shotCost) {
+        score -= shotCost;
     }
 
 
-    if (
-        playerX + PLAYER_WIDTH >
-        WORLD_WIDTH
-    ) {
+    const projectile =
+        createObject(
+            'projectile',
+            playerX + 80,
+            playerY + 43
+        );
 
-        playerX =
-            WORLD_WIDTH -
-            PLAYER_WIDTH;
 
-        velocityX = 0;
+    projectile.w = 25;
 
+    projectile.h = 10;
+
+    projectile.v = shotSpeed;
+
+
+    projectiles.push(
+        projectile
+    );
+
+
+    shots++;
+
+
+    $('#hud-shots').textContent =
+        `➹ ${shots}`;
+
+
+    $('#hud-score').textContent =
+        `✦ ${String(score).padStart(3, '0')}`;
+
+}
+
+
+// =====================================================
+// COLISÃO
+// =====================================================
+
+function collide(a, b) {
+
+    return (
+
+        a.x <
+            b.x + b.w &&
+
+        a.x + PLAYER_W >
+            b.x &&
+
+        a.y <
+            b.y + b.h &&
+
+        a.y + 92 >
+            b.y
+
+    );
+
+}
+
+
+// =====================================================
+// LOOP PRINCIPAL
+// =====================================================
+
+function loop() {
+
+    if (!gameRunning) {
+        return;
     }
 
-};
+
+    // MOVIMENTO
+
+    const direction =
+        (keys.right ? 1 : 0) -
+        (keys.left ? 1 : 0);
 
 
-// ======================================================
-// GRAVIDADE
-// ======================================================
-
-const updateVerticalMovement = () => {
-
-    if (!gameRunning) return;
+    velocityX +=
+        direction *
+        0.55 *
+        speedFactor;
 
 
-    velocityY -= GRAVITY;
+    velocityX *= 0.8;
 
 
-    playerY += velocityY;
+    velocityX =
+        Math.max(
+            -5,
+            Math.min(
+                5,
+                velocityX
+            )
+        );
+
+
+    playerX =
+        Math.max(
+            20,
+            playerX + velocityX
+        );
+
+
+    // GRAVIDADE
+
+    velocityY -=
+        GRAVITY;
+
+
+    playerY +=
+        velocityY;
 
 
     if (playerY <= 0) {
@@ -573,642 +1080,501 @@ const updateVerticalMovement = () => {
 
         velocityY = 0;
 
-        isGrounded = true;
-
-    } else {
-
-        isGrounded = false;
-
-    }
-
-};
-
-
-// ======================================================
-// AGACHAMENTO
-// ======================================================
-
-const updateCrouch = () => {
-
-    if (!gameRunning) return;
-
-
-    if (
-        keys.down &&
-        isGrounded
-    ) {
-
-        if (!isCrouching) {
-
-            isCrouching = true;
-
-            player.classList.add(
-                'crouching'
-            );
-
-            setFrame(1, 2);
-
-        }
-
-    } else {
-
-        if (isCrouching) {
-
-            isCrouching = false;
-
-            player.classList.remove(
-                'crouching'
-            );
-
-            setFrame(0, 0);
-
-        }
-
-    }
-
-};
-
-
-// ======================================================
-// CÂMERA
-// ======================================================
-
-const updateCamera = () => {
-
-    if (!gameRunning) return;
-
-
-    const targetCameraX =
-        playerX -
-        CAMERA_OFFSET;
-
-
-    cameraX +=
-        (
-            targetCameraX -
-            cameraX
-        ) *
-        CAMERA_SMOOTHING;
-
-
-    if (cameraX < 0) {
-
-        cameraX = 0;
-
     }
 
 
-    const visibleWidth =
-        gameBoard.clientWidth;
+    // CÂMERA
 
-
-    const maxCameraX =
+    const camera =
         Math.max(
             0,
-            WORLD_WIDTH -
-            visibleWidth
+            playerX - 230
         );
 
 
-    if (
-        cameraX >
-        maxCameraX
-    ) {
-
-        cameraX =
-            maxCameraX;
-
-    }
-
-
-    const screenX =
-        playerX -
-        cameraX;
-
-
     player.style.left =
-        `${screenX}px`;
+        `${Math.max(
+            50,
+            playerX - camera
+        )}px`;
 
 
     player.style.bottom =
-        `${playerY}px`;
+        `calc(
+            ${GROUND}% +
+            ${playerY}px
+        )`;
 
 
-    obstacleElements.forEach(
-        (object) => {
+    // ANIMAÇÃO BÁSICA
 
-            const screenObjectX =
-                object.data.x -
-                cameraX;
-
-
-            object.element.style.left =
-                `${screenObjectX}px`;
-
-        }
-    );
-
-};
+    player.style.backgroundPosition =
+        `-${
+            Math.abs(velocityX) > 0.7
+                ? 128
+                : 0
+        }px ${
+            playerY > 2
+                ? -128
+                : 0
+        }px`;
 
 
-// ======================================================
-// ANIMAÇÃO DO PERSONAGEM
-// ======================================================
+    // OBJETOS
 
-const updatePlayerAnimation = () => {
+    objects.forEach(
+        (item) => {
 
-    if (!gameRunning) return;
-
-
-    if (isCrouching) {
-
-        setFrame(1, 2);
-
-        return;
-
-    }
+            item.el.style.left =
+                `${item.x - camera}px`;
 
 
-    if (!isGrounded) {
-
-        if (velocityY > 5) {
-
-            setFrame(0, 1);
-
-        }
-
-        else if (
-            velocityY > -5
-        ) {
-
-            setFrame(1, 1);
-
-        }
-
-        else {
-
-            setFrame(2, 1);
-
-        }
-
-        return;
-
-    }
-
-
-    if (
-        Math.abs(velocityX) >
-        0.5
-    ) {
-
-        walkTimer++;
-
-
-        if (
-            walkTimer >= 8
-        ) {
-
-            walkTimer = 0;
-
-            currentFrame++;
-
+            // SEMENTES
 
             if (
-                currentFrame > 3
+
+                item.kind === 'seed' &&
+
+                !item.collected &&
+
+                collide(
+
+                    {
+                        x: playerX,
+                        y: playerY
+                    },
+
+                    {
+                        x: item.x,
+                        y: item.y,
+                        w: item.w,
+                        h: item.h
+                    }
+
+                )
+
             ) {
 
-                currentFrame = 0;
+                item.collected = true;
+
+                item.el.style.display =
+                    'none';
+
+
+                score +=
+                    Math.round(
+                        10 *
+                        seedMultiplier
+                    );
+
+
+                $('#hud-score').textContent =
+                    `✦ ${String(
+                        score
+                    ).padStart(3, '0')}`;
 
             }
 
 
-            setFrame(
-                currentFrame,
-                0
+            // OBSTÁCULOS
+
+            if (
+
+                item.kind === 'obstacle' &&
+
+                collide(
+
+                    {
+                        x: playerX,
+                        y: playerY
+                    },
+
+                    {
+                        x: item.x,
+                        y: 0,
+                        w: item.w,
+                        h: item.h
+                    }
+
+                )
+
+            ) {
+
+                if (shield > 0) {
+
+                    shield--;
+
+                    item.el.remove();
+
+                    item.collected = true;
+
+                }
+
+                else {
+
+                    gameOver();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    // PROJÉTEIS
+
+    projectiles.forEach(
+        (shot) => {
+
+            shot.x +=
+                shot.v;
+
+
+            shot.el.style.left =
+                `${shot.x - camera}px`;
+
+
+            objects.forEach(
+                (item) => {
+
+                    if (
+
+                        item.kind === 'obstacle' &&
+
+                        !item.collected &&
+
+                        shot.x <
+                            item.x + item.w &&
+
+                        shot.x + shot.w >
+                            item.x
+
+                    ) {
+
+                        item.collected = true;
+
+                        item.el.remove();
+
+
+                        score +=
+                            Math.round(
+                                15 *
+                                xpMultiplier
+                            );
+
+
+                        $('#hud-score').textContent =
+                            `✦ ${String(
+                                score
+                            ).padStart(3, '0')}`;
+
+
+                        if (!pierce) {
+
+                            shot.x = 99999;
+
+                        }
+
+                    }
+
+                }
             );
 
-        }
-
-    } else {
-
-        currentFrame = 0;
-
-        setFrame(0, 0);
-
-    }
-
-};
-
-
-// ======================================================
-// COLISÃO
-// ======================================================
-
-const rectanglesCollide = (
-    a,
-    b
-) => {
-
-    return (
-
-        a.x <
-        b.x + b.width &&
-
-        a.x + a.width >
-        b.x &&
-
-        a.y <
-        b.y + b.height &&
-
-        a.y + a.height >
-        b.y
-
-    );
-
-};
-
-
-const checkCollisions = () => {
-
-    if (!gameRunning) return;
-
-
-    const playerBox =
-        getPlayerHitbox();
-
-
-    for (
-        const object
-        of obstacleElements
-    ) {
-
-        const obstacleBox = {
-
-            x: object.data.x,
-
-            y: 0,
-
-            width:
-                object.data.width,
-
-            height:
-                object.data.height
-
-        };
-
-
-        if (
-            rectanglesCollide(
-                playerBox,
-                obstacleBox
-            )
-        ) {
-
-            gameOver();
-
-            return;
-
-        }
-
-    }
-
-};
-
-
-// ======================================================
-// GAME OVER
-// ======================================================
-
-const gameOver = () => {
-
-    if (!gameRunning) return;
-
-
-    gameRunning = false;
-
-
-    velocityX = 0;
-
-    velocityY = 0;
-
-
-    setFrame(3, 2);
-
-
-    gameOverScreen.style.visibility =
-        'visible';
-
-};
-
-
-// ======================================================
-// RESETAR JOGO
-// ======================================================
-
-const resetGame = () => {
-
-    gameRunning = false;
-
-
-    isGrounded = true;
-
-    isCrouching = false;
-
-
-    velocityX = 0;
-
-    velocityY = 0;
-
-
-    playerX = 200;
-
-    playerY = 0;
-
-
-    cameraX = 0;
-
-
-    keys.left = false;
-
-    keys.right = false;
-
-    keys.down = false;
-
-
-    currentFrame = 0;
-
-    walkTimer = 0;
-
-
-    player.classList.remove(
-        'crouching'
-    );
-
-
-    setFrame(0, 0);
-
-
-    gameOverScreen.style.visibility =
-        'hidden';
-
-
-    updateCamera();
-
-};
-
-
-// ======================================================
-// REINICIAR
-// ======================================================
-
-const restart = () => {
-
-    resetGame();
-
-    gameRunning = true;
-
-    updateCamera();
-
-};
-
-
-// ======================================================
-// CONTROLES DE TECLADO
-// ======================================================
-
-document.addEventListener(
-    'keydown',
-    (event) => {
-
-
-        if (!gameRunning) {
 
             if (
-                event.code ===
-                'Enter'
+                shot.x >
+                playerX + 700
             ) {
 
-                restart();
+                shot.el.remove();
 
             }
 
-            return;
-
         }
+    );
 
 
-        switch (event.code) {
+    // CHEGADA
 
+    if (playerX > 2700) {
 
-            case 'ArrowLeft':
-
-            case 'KeyA':
-
-                keys.left = true;
-
-                event.preventDefault();
-
-                break;
-
-
-            case 'ArrowRight':
-
-            case 'KeyD':
-
-                keys.right = true;
-
-                event.preventDefault();
-
-                break;
-
-
-            case 'ArrowDown':
-
-            case 'KeyS':
-
-                keys.down = true;
-
-                event.preventDefault();
-
-                break;
-
-
-            case 'ArrowUp':
-
-            case 'KeyW':
-
-            case 'Space':
-
-                event.preventDefault();
-
-                jump();
-
-                break;
-
-        }
+        completeLevel();
 
     }
-);
 
 
-// ======================================================
-// TECLAS SOLTAS
-// ======================================================
+    animationId =
+        requestAnimationFrame(
+            loop
+        );
 
-document.addEventListener(
-    'keyup',
-    (event) => {
-
-
-        switch (event.code) {
+}
 
 
-            case 'ArrowLeft':
+// =====================================================
+// GAME OVER
+// =====================================================
 
-            case 'KeyA':
+function gameOver() {
 
-                keys.left = false;
-
-                break;
-
-
-            case 'ArrowRight':
-
-            case 'KeyD':
-
-                keys.right = false;
-
-                break;
+    if (!gameRunning) {
+        return;
+    }
 
 
-            case 'ArrowDown':
+    if (canRevive) {
 
-            case 'KeyS':
+        canRevive = false;
 
-                keys.down = false;
+        shield = 1;
 
-                break;
-
-        }
+        return;
 
     }
-);
 
 
-// ======================================================
-// BOTÕES DO MENU
-// ======================================================
-
-playButton.addEventListener(
-    'click',
-    showMap
-);
+    stopGame();
 
 
-howToPlayButton.addEventListener(
-    'click',
-    showHowToPlay
-);
+    $('#game-over')
+        .classList.add('show');
+
+}
 
 
-creditsButton.addEventListener(
-    'click',
-    showCredits
-);
+// =====================================================
+// FASE CONCLUÍDA
+// =====================================================
+
+function completeLevel() {
+
+    if (!gameRunning) {
+        return;
+    }
 
 
-// ======================================================
-// VOLTAR
-// ======================================================
-
-backFromHow.addEventListener(
-    'click',
-    showMainMenu
-);
+    stopGame();
 
 
-backFromCredits.addEventListener(
-    'click',
-    showMainMenu
-);
+    $('#level-complete')
+        .classList.add('show');
+
+}
 
 
-mapBack.addEventListener(
-    'click',
-    showMainMenu
-);
+// =====================================================
+// REINICIAR
+// =====================================================
 
-
-// ======================================================
-// ENTRAR NA SECRETARIA
-// ======================================================
-
-secretariaButton.addEventListener(
+$('#restart-button').addEventListener(
     'click',
     startGame
 );
 
 
-// ======================================================
-// MENU DURANTE GAME OVER
-// ======================================================
+// =====================================================
+// VOLTAR AO MAPA
+// =====================================================
 
-gameMenuButton.addEventListener(
+$('#game-menu-button').addEventListener(
     'click',
-    showMainMenu
-);
+    () => {
 
+        stopGame();
 
-// ======================================================
-// BOTÃO REINICIAR
-// ======================================================
-
-restartButton.addEventListener(
-    'click',
-    restart
-);
-
-
-// ======================================================
-// LOOP PRINCIPAL
-// ======================================================
-
-const gameLoop = () => {
-
-    if (gameRunning) {
-
-        updateCrouch();
-
-        updateHorizontalMovement();
-
-        updateVerticalMovement();
-
-        updateCamera();
-
-        checkCollisions();
-
-        updatePlayerAnimation();
+        show('#map-screen');
 
     }
-
-
-    requestAnimationFrame(
-        gameLoop
-    );
-
-};
-
-
-// ======================================================
-// INICIALIZAÇÃO
-// ======================================================
-
-createLevelObjects();
-
-setFrame(0, 0);
-
-showMainMenu();
-
-requestAnimationFrame(
-    gameLoop
 );
+
+
+// =====================================================
+// VOLTAR AO MAPA APÓS COMPLETAR
+// =====================================================
+
+$('#complete-map-button').addEventListener(
+    'click',
+    () => {
+
+        show('#map-screen');
+
+    }
+);
+
+
+// =====================================================
+// TECLADO
+// =====================================================
+
+document.addEventListener(
+    'keydown',
+    (event) => {
+
+        // ESQUERDA
+
+        if (
+            event.code === 'ArrowLeft' ||
+            event.code === 'KeyA'
+        ) {
+
+            keys.left = true;
+
+            event.preventDefault();
+
+        }
+
+
+        // DIREITA
+
+        if (
+            event.code === 'ArrowRight' ||
+            event.code === 'KeyD'
+        ) {
+
+            keys.right = true;
+
+            event.preventDefault();
+
+        }
+
+
+        // PULO
+
+        if (
+            event.code === 'ArrowUp' ||
+            event.code === 'KeyW' ||
+            event.code === 'Space'
+        ) {
+
+            jump();
+
+            event.preventDefault();
+
+        }
+
+
+        // ATAQUE
+
+        if (
+            event.code === 'KeyF'
+        ) {
+
+            shoot();
+
+            event.preventDefault();
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// TECLAS SOLTAS
+// =====================================================
+
+document.addEventListener(
+    'keyup',
+    (event) => {
+
+        if (
+            event.code === 'ArrowLeft' ||
+            event.code === 'KeyA'
+        ) {
+
+            keys.left = false;
+
+        }
+
+
+        if (
+            event.code === 'ArrowRight' ||
+            event.code === 'KeyD'
+        ) {
+
+            keys.right = false;
+
+        }
+
+    }
+);
+
+
+// =====================================================
+// CONTROLES MOBILE
+// =====================================================
+
+document
+    .querySelectorAll('[data-control]')
+    .forEach((button) => {
+
+        const control =
+            button.dataset.control;
+
+
+        button.addEventListener(
+            'pointerdown',
+            (event) => {
+
+                event.preventDefault();
+
+
+                if (control === 'jump') {
+
+                    jump();
+
+                }
+
+                else if (
+                    control === 'shoot'
+                ) {
+
+                    shoot();
+
+                }
+
+                else {
+
+                    keys[control] = true;
+
+                }
+
+            }
+        );
+
+
+        button.addEventListener(
+            'pointerup',
+            () => {
+
+                if (
+                    control === 'left' ||
+                    control === 'right'
+                ) {
+
+                    keys[control] = false;
+
+                }
+
+            }
+        );
+
+
+        button.addEventListener(
+            'pointerleave',
+            () => {
+
+                if (
+                    control === 'left' ||
+                    control === 'right'
+                ) {
+
+                    keys[control] = false;
+
+                }
+
+            }
+        );
+
+    });
