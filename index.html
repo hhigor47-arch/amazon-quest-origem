@@ -1,459 +1,856 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
 
 <head>
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#071d16">
 
     <title>Amazon Quest: Origem</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 
-    <script
-        src="script.js"
-        defer
-    ></script>
+    <script src="script.js" defer></script>
 </head>
-
 
 <body>
 
+    <main class="app-shell">
 
-    <!-- ==================================================
-         MENU PRINCIPAL
-    ================================================== -->
+        <!-- ==================================================
+             MENU PRINCIPAL
+        ================================================== -->
 
-    <section
-        class="main-menu"
-        id="main-menu"
-    >
+        <section
+            id="main-menu"
+            class="screen main-menu is-active"
+            aria-label="Menu principal"
+        >
 
-        <div class="menu-content">
+            <div class="ambient-leaf leaf-one"></div>
+            <div class="ambient-leaf leaf-two"></div>
+            <div class="fireflies" aria-hidden="true"></div>
 
-            <div class="game-title">
+            <div class="menu-panel">
 
-                <span class="title-small">
-                    UMA AVENTURA PELA AMAZÔNIA
-                </span>
+                <p class="eyebrow">
+                    UMA AVENTURA DE APRENDIZAGEM
+                </p>
 
                 <h1>
                     AMAZON
                     <span>QUEST</span>
+                    <small>ORIGEM</small>
                 </h1>
 
-                <h2>
-                    ORIGEM
-                </h2>
+                <p class="intro">
+                    Conhecimento, coragem e natureza em uma jornada pela Amazônia.
+                </p>
 
-                <p>
-                    Conhecimento • Cultura • Aventura
+                <div class="menu-actions">
+
+                    <button
+                        class="button button-primary"
+                        id="play-button"
+                    >
+                        <span>▶</span>
+                        JOGAR
+                    </button>
+
+                    <button
+                        class="button"
+                        id="how-to-play-button"
+                    >
+                        ⌘ COMO JOGAR
+                    </button>
+
+                    <button
+                        class="button"
+                        id="settings-button"
+                    >
+                        ⚙ CONFIGURAÇÕES
+                    </button>
+
+                    <button
+                        class="button"
+                        id="credits-button"
+                    >
+                        ★ CRÉDITOS
+                    </button>
+
+                </div>
+
+                <p class="version">
+                    AMAZON QUEST: ORIGEM
+                    <b>•</b>
+                    FASE 01 DISPONÍVEL
                 </p>
 
             </div>
 
+            <div
+                class="menu-hero"
+                aria-hidden="true"
+            >
 
-            <!-- PERSONAGEM DO MENU -->
+                <div class="hero-ring"></div>
 
-            <div class="menu-character">
+                <div class="hero-shadow"></div>
+
                 <div class="character-sprite"></div>
-            </div>
 
-
-            <!-- BOTÕES -->
-
-            <div class="menu-buttons">
-
-                <button
-                    class="menu-button primary"
-                    id="play-button"
-                >
-                    ▶ JOGAR
-                </button>
-
-
-                <button
-                    class="menu-button"
-                    id="how-to-play-button"
-                >
-                    ? COMO JOGAR
-                </button>
-
-
-                <button
-                    class="menu-button"
-                    id="credits-button"
-                >
-                    ★ CRÉDITOS
-                </button>
-
-            </div>
-
-
-            <div class="game-version">
-                AMAZON QUEST: ORIGEM • v0.1
-            </div>
-
-        </div>
-
-
-        <footer class="menu-footer">
-
-            Desenvolvido por
-            <strong>Igor Felipe</strong>
-
-        </footer>
-
-    </section>
-
-
-
-    <!-- ==================================================
-         COMO JOGAR
-    ================================================== -->
-
-    <section
-        class="information-screen"
-        id="how-to-play"
-    >
-
-        <div class="information-box">
-
-            <h2>COMO JOGAR</h2>
-
-
-            <div class="controls">
-
-                <div class="control">
-                    <strong>A / ←</strong>
-                    <span>Andar para esquerda</span>
-                </div>
-
-                <div class="control">
-                    <strong>D / →</strong>
-                    <span>Andar para direita</span>
-                </div>
-
-                <div class="control">
-                    <strong>W / ↑ / ESPAÇO</strong>
-                    <span>Pular</span>
-                </div>
-
-                <div class="control">
-                    <strong>S / ↓</strong>
-                    <span>Agachar</span>
+                <div class="hero-caption">
+                    GUARDIÃO DA FLORESTA
                 </div>
 
             </div>
 
+            <footer>
+                Feito para o
+                <strong>Centro Educacional Dr. Barbosa</strong>
+            </footer>
 
-            <p class="information-text">
+        </section>
 
-                Explore o mundo, supere obstáculos,
-                descubra caminhos e complete sua missão.
 
-            </p>
+        <!-- ==================================================
+             COMO JOGAR
+        ================================================== -->
 
-
-            <button
-                class="menu-button back-button"
-                id="back-from-how"
-            >
-                ← VOLTAR
-            </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ==================================================
-         CRÉDITOS
-    ================================================== -->
-
-    <section
-        class="information-screen"
-        id="credits"
-    >
-
-        <div class="information-box credits-box">
-
-            <h2>CRÉDITOS</h2>
-
-
-            <div class="credits-character">
-
-                <div class="small-character-sprite"></div>
-
-            </div>
-
-
-            <h3>
-                AMAZON QUEST: ORIGEM
-            </h3>
-
-
-            <p>
-                Uma aventura inspirada na Amazônia,
-                na cultura e no conhecimento.
-            </p>
-
-
-            <div class="credit-line">
-
-                <span>Desenvolvimento</span>
-
-                <strong>
-                    Igor Felipe
-                </strong>
-
-            </div>
-
-
-            <div class="credit-line">
-
-                <span>Programação</span>
-
-                <strong>
-                    Igor Felipe + IA
-                </strong>
-
-            </div>
-
-
-            <div class="credit-line">
-
-                <span>Projeto</span>
-
-                <strong>
-                    Festival Cultural
-                </strong>
-
-            </div>
-
-
-            <button
-                class="menu-button back-button"
-                id="back-from-credits"
-            >
-                ← VOLTAR
-            </button>
-
-        </div>
-
-    </section>
-
-
-
-    <!-- ==================================================
-         MAPA
-    ================================================== -->
-
-    <section
-        class="map-screen"
-        id="map-screen"
-    >
-
-        <div class="map-header">
-
-            <h2>
-                AMAZON QUEST
-            </h2>
-
-            <span>
-                MAPA DA AVENTURA
-            </span>
-
-        </div>
-
-
-        <div class="map">
-
-
-            <!-- PRIMEIRA FASE -->
-
-            <div
-                class="map-location unlocked"
-            >
-
-                <div class="location-icon">
-                    🏫
-                </div>
-
-
-                <h3>
-                    SECRETARIA
-                </h3>
-
-
-                <span>
-                    FASE 01
-                </span>
-
-
-                <button
-                    class="location-button"
-                    id="secretaria-button"
-                >
-                    ENTRAR
-                </button>
-
-            </div>
-
-
-
-            <!-- FUTURA FASE -->
-
-            <div
-                class="map-location locked"
-            >
-
-                <div class="location-icon">
-                    🌳
-                </div>
-
-
-                <h3>
-                    ??? 
-                </h3>
-
-
-                <span>
-                    BLOQUEADO
-                </span>
-
-            </div>
-
-
-
-            <!-- FUTURA FASE -->
-
-            <div
-                class="map-location locked"
-            >
-
-                <div class="location-icon">
-                    🏞️
-                </div>
-
-
-                <h3>
-                    ???
-                </h3>
-
-
-                <span>
-                    BLOQUEADO
-                </span>
-
-            </div>
-
-        </div>
-
-
-        <button
-            class="menu-button map-back"
-            id="map-back"
+        <section
+            id="how-to-play"
+            class="screen modal-screen"
+            aria-label="Como jogar"
         >
-            ← MENU
-        </button>
 
-    </section>
+            <div class="modal-card info-card">
 
+                <button
+                    class="close-button"
+                    data-close="how-to-play"
+                    aria-label="Fechar"
+                >
+                    ×
+                </button>
 
-
-    <!-- ==================================================
-         JOGO
-    ================================================== -->
-
-    <section
-        class="game-screen"
-        id="game-screen"
-    >
-
-
-        <!-- HUD DO JOGO -->
-
-        <div class="game-hud">
-
-
-            <div class="hud-lives">
-                ❤️ ❤️ ❤️
-            </div>
-
-
-            <div class="hud-stage">
-                FASE 01
-            </div>
-
-
-            <div class="hud-score">
-                🪙 000
-            </div>
-
-
-        </div>
-
-
-
-        <!-- ==================================================
-             ESTRUTURA ORIGINAL DO GAMEPLAY
-        ================================================== -->
-
-        <main class="game-board">
-
-            <div class="player"></div>
-
-            <div class="obstacle"></div>
-
-        </main>
-
-
-
-        <!-- ==================================================
-             GAME OVER
-        ================================================== -->
-
-        <div class="game-over">
-
-            <div class="game-over-box">
+                <p class="eyebrow">
+                    GUIA RÁPIDO
+                </p>
 
                 <h2>
-                    FIM DE JOGO
+                    COMO JOGAR
                 </h2>
 
+                <div class="controls-grid">
+
+                    <div>
+                        <b>←</b>
+                        <span>
+                            Andar à esquerda
+                        </span>
+                    </div>
+
+                    <div>
+                        <b>D / →</b>
+                        <span>
+                            Andar à direita
+                        </span>
+                    </div>
+
+                    <div>
+                        <b>W / ↑ / ESPAÇO</b>
+                        <span>
+                            Pular
+                        </span>
+                    </div>
+
+                    <div>
+                        <b>A / F</b>
+                        <span>
+                            Atirar semente
+                        </span>
+                    </div>
+
+                </div>
 
                 <p>
-                    A aventura ainda não acabou.
+                    Comece no mapa, responda ao desafio e escolha uma carta
+                    antes de correr pela primeira trilha. Desvie dos obstáculos
+                    e colete sementes de conhecimento.
+                </p>
+
+                <button
+                    class="button button-primary"
+                    data-close="how-to-play"
+                >
+                    ENTENDI
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             CONFIGURAÇÕES
+        ================================================== -->
+
+        <section
+            id="settings"
+            class="screen modal-screen"
+            aria-label="Configurações"
+        >
+
+            <div class="modal-card settings-card">
+
+                <button
+                    class="close-button"
+                    data-close="settings"
+                    aria-label="Fechar"
+                >
+                    ×
+                </button>
+
+                <p class="eyebrow">
+                    PREFERÊNCIAS
+                </p>
+
+                <h2>
+                    CONFIGURAÇÕES
+                </h2>
+
+                <label class="setting-row">
+
+                    <span>
+                        <b>
+                            Som ambiente
+                        </b>
+
+                        <small>
+                            Ative os sons da jornada
+                        </small>
+                    </span>
+
+                    <input
+                        id="sound-toggle"
+                        type="checkbox"
+                        checked
+                    >
+
+                    <i></i>
+
+                </label>
+
+
+                <label class="setting-row">
+
+                    <span>
+                        <b>
+                            Reduzir movimento
+                        </b>
+
+                        <small>
+                            Diminui animações visuais
+                        </small>
+                    </span>
+
+                    <input
+                        id="motion-toggle"
+                        type="checkbox"
+                    >
+
+                    <i></i>
+
+                </label>
+
+
+                <button
+                    class="button button-primary"
+                    data-close="settings"
+                >
+                    SALVAR E VOLTAR
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             CRÉDITOS
+        ================================================== -->
+
+        <section
+            id="credits"
+            class="screen modal-screen"
+            aria-label="Créditos do projeto"
+        >
+
+            <div class="modal-card credits-card">
+
+                <button
+                    class="close-button"
+                    data-close="credits"
+                    aria-label="Fechar"
+                >
+                    ×
+                </button>
+
+                <div
+                    class="school-logo-placeholder"
+                    aria-label="Espaço reservado para a logo oficial da escola"
+                >
+
+                    <span>
+                        CE
+                    </span>
+
+                    <b>
+                        LOGO DA<br>
+                        ESCOLA
+                    </b>
+
+                </div>
+
+                <p class="eyebrow">
+                    CRÉDITOS DO PROJETO
+                </p>
+
+                <h2>
+                    AMAZON QUEST
+                </h2>
+
+                <div class="credit-list">
+
+                    <p>
+                        <span>
+                            Desenvolvimento
+                        </span>
+
+                        <b>
+                            Blazoar Desenvolvimento
+                        </b>
+                    </p>
+
+                    <p>
+                        <span>
+                            Criação e programação
+                        </span>
+
+                        <b>
+                            Igor Felipe
+                        </b>
+                    </p>
+
+                    <p>
+                        <span>
+                            Projeto educacional
+                        </span>
+
+                        <b>
+                            Centro Educacional Dr. Barbosa
+                        </b>
+                    </p>
+
+                </div>
+
+                <p class="credits-note">
+                    A logo oficial será exibida aqui assim que o arquivo
+                    for adicionado ao projeto.
+                </p>
+
+                <button
+                    class="button button-primary"
+                    data-close="credits"
+                >
+                    VOLTAR
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             MAPA DA AVENTURA
+        ================================================== -->
+
+        <section
+            id="map-screen"
+            class="screen map-screen"
+            aria-label="Mapa da aventura"
+        >
+
+            <header class="map-header">
+
+                <button
+                    class="icon-button"
+                    id="map-back"
+                    aria-label="Voltar ao menu"
+                >
+                    ←
+                </button>
+
+                <div>
+
+                    <p class="eyebrow">
+                        TRILHA DE PROGRESSÃO
+                    </p>
+
+                    <h2>
+                        MAPA DA AVENTURA
+                    </h2>
+
+                </div>
+
+                <div class="chapter-chip">
+                    CAPÍTULO 01
+                    <b>
+                        1/3
+                    </b>
+                </div>
+
+            </header>
+
+
+            <div class="map-landscape">
+
+                <div class="river"></div>
+
+                <div class="mountains"></div>
+
+                <div class="path path-one"></div>
+
+                <div class="path path-two"></div>
+
+                <div class="tree tree-a">
+                    ♣
+                </div>
+
+                <div class="tree tree-b">
+                    ♣
+                </div>
+
+                <div class="tree tree-c">
+                    ♣
+                </div>
+
+
+                <!-- FASE 01 -->
+
+                <button
+                    class="map-location unlocked"
+                    id="school-location"
+                >
+
+                    <span class="location-pulse"></span>
+
+                    <span class="school-icon">
+                        <i></i>
+                        <i></i>
+                        <i></i>
+                    </span>
+
+                    <strong>
+                        Secretaria<br>
+                        Beira Rio
+                    </strong>
+
+                    <small>
+                        FASE 01 · SECRETARIA BEIRA RIO
+                    </small>
+
+                    <em>
+                        CLIQUE PARA ENTRAR
+                    </em>
+
+                </button>
+
+
+                <!-- FASE FUTURA -->
+
+                <div class="map-location future future-one">
+
+                    <span>
+                        ✦
+                    </span>
+
+                    <strong>
+                        Vila das Águas
+                    </strong>
+
+                    <small>
+                        EM BREVE
+                    </small>
+
+                </div>
+
+
+                <!-- FASE FUTURA -->
+
+                <div class="map-location future future-two">
+
+                    <span>
+                        ⌁
+                    </span>
+
+                    <strong>
+                        Floresta Encantada
+                    </strong>
+
+                    <small>
+                        EM BREVE
+                    </small>
+
+                </div>
+
+            </div>
+
+            <p class="map-tip">
+                ✦ Sua jornada começa na escola.
+                Clique no marco iluminado para iniciar.
+            </p>
+
+        </section>
+
+
+        <!-- ==================================================
+             TRANSIÇÃO PARA A FASE
+        ================================================== -->
+
+        <section
+            id="gate-transition"
+            class="screen gate-transition"
+            aria-hidden="true"
+        >
+
+            <div class="transition-copy">
+
+                <p>
+                    FASE 01
+                </p>
+
+                <h2>
+                    TRILHA DO SABER
+                </h2>
+
+                <span>
+                    O portão se abre para uma nova descoberta...
+                </span>
+
+            </div>
+
+            <div class="gate gate-left"></div>
+
+            <div class="gate gate-right"></div>
+
+            <div class="gate-sign">
+
+                SECRETARIA<br>
+
+                <b>
+                    BEIRA RIO
+                </b>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================================================
+             BARALHO / ROGUELIKE
+        ================================================== -->
+
+        <section
+            id="reward-screen"
+            class="screen modal-screen reward-screen"
+            aria-label="Escolha uma carta"
+        >
+
+            <div class="reward-wrap">
+
+                <p class="eyebrow">
+                    BARALHO DA TRILHA
+                </p>
+
+                <h2>
+                    ESCOLHA SEU PODER
+                </h2>
+
+                <p>
+                    Três cartas surgiram.
+                    Cada partida revela uma combinação diferente.
                 </p>
 
 
-                <button class="restart">
-                    REINICIAR
-                </button>
+                <div class="rarity-legend">
+
+                    <span class="common">
+                        COMUM
+                    </span>
+
+                    <span class="rare">
+                        RARO
+                    </span>
+
+                    <span class="legendary">
+                        LENDÁRIO
+                    </span>
+
+                </div>
 
 
-                <button
-                    class="menu-button"
-                    id="game-menu-button"
-                >
-                    MENU PRINCIPAL
-                </button>
+                <div
+                    class="reward-cards"
+                    id="reward-cards"
+                ></div>
+
+
+                <div class="draft-actions">
+
+                    <button
+                        class="reroll-button"
+                        id="reroll-button"
+                    >
+                        ↻ NOVAS CARTAS
+
+                        <small id="reroll-count">
+                            1
+                        </small>
+                    </button>
+
+                    <span>
+                        Escolha com cuidado:
+                        seu poder acompanha toda a trilha.
+                    </span>
+
+                </div>
 
             </div>
 
-        </div>
+        </section>
 
 
-    </section>
+        <!-- ==================================================
+             GAMEPLAY — FASE 01
+        ================================================== -->
 
+        <section
+            id="game-screen"
+            class="screen game-screen"
+            aria-label="Fase 01"
+        >
+
+            <!-- HUD -->
+
+            <div class="game-hud">
+
+                <div class="hud-brand">
+                    AQ
+                    <span>
+                        ORIGEM
+                    </span>
+                </div>
+
+                <div class="hud-center">
+
+                    <b>
+                        FASE 01
+                    </b>
+
+                    <small>
+                        TRILHA DO SABER
+                    </small>
+
+                </div>
+
+                <div class="hud-stats">
+
+                    <span id="hud-power">
+                        SEM PODER
+                    </span>
+
+                    <b id="hud-score">
+                        ✦ 000
+                    </b>
+
+                    <b id="hud-shots">
+                        ➹ 0
+                    </b>
+
+                </div>
+
+            </div>
+
+
+            <!-- MUNDO -->
+
+            <main class="game-board">
+
+                <div class="sky-sun"></div>
+
+                <div class="cloud cloud-a"></div>
+
+                <div class="cloud cloud-b"></div>
+
+                <div class="canopy canopy-back"></div>
+
+                <div class="canopy canopy-front"></div>
+
+
+                <div
+                    class="world"
+                    id="world"
+                >
+
+                    <div class="ground"></div>
+
+                    <div
+                        class="finish"
+                        id="finish"
+                    >
+                        ⌂
+
+                        <span>
+                            CHEGADA
+                        </span>
+
+                    </div>
+
+                    <div
+                        class="player"
+                        id="player"
+                    ></div>
+
+                </div>
+
+
+                <!-- CONTROLES MOBILE -->
+
+                <div class="mobile-controls">
+
+                    <button data-control="left">
+                        ←
+                    </button>
+
+                    <button data-control="jump">
+                        ↑
+                    </button>
+
+                    <button data-control="right">
+                        →
+                    </button>
+
+                    <button data-control="shoot">
+                        A
+                    </button>
+
+                </div>
+
+            </main>
+
+
+            <!-- ANIMAÇÃO DO PODER -->
+
+            <div
+                id="power-activation"
+                class="power-activation"
+                aria-live="polite"
+            >
+
+                <div
+                    class="activation-symbol"
+                    id="activation-symbol"
+                >
+                    ✦
+                </div>
+
+                <p>
+                    PODER RECEBIDO
+                </p>
+
+                <h2 id="activation-name">
+                    PULO DA ONÇA
+                </h2>
+
+                <span id="activation-description">
+                    Seu caminho mudou.
+                </span>
+
+            </div>
+
+
+            <!-- GAME OVER -->
+
+            <div
+                id="game-over"
+                class="game-overlay"
+            >
+
+                <div class="game-over-box">
+
+                    <p>
+                        VOCÊ TROPEÇOU NA TRILHA
+                    </p>
+
+                    <h2>
+                        TENTE DE NOVO
+                    </h2>
+
+                    <button
+                        class="button button-primary"
+                        id="restart-button"
+                    >
+                        RECOMEÇAR
+                    </button>
+
+                    <button
+                        class="button"
+                        id="game-menu-button"
+                    >
+                        VOLTAR AO MAPA
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- FASE CONCLUÍDA -->
+
+            <div
+                id="level-complete"
+                class="game-overlay"
+            >
+
+                <div class="game-over-box">
+
+                    <p>
+                        MISSÃO CUMPRIDA
+                    </p>
+
+                    <h2>
+                        TRILHA CONCLUÍDA!
+                    </h2>
+
+                    <p>
+                        Você chegou ao fim da sua primeira aventura.
+                    </p>
+
+                    <button
+                        class="button button-primary"
+                        id="complete-map-button"
+                    >
+                        VOLTAR AO MAPA
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
 
 </body>
 
